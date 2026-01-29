@@ -45,6 +45,8 @@ bash scripts/memory-engine/recall.sh "your query here"
 
 ```
 moltbot-config/
+├── docs/                     # Comprehensive analysis and guides
+│   └── context-overflow-prevention.md  # Root cause analysis + all config options
 ├── scripts/memory-engine/    # Memory scoring, decay, self-review
 │   ├── capture.sh            # Extract structured memories from logs
 │   ├── decay.sh              # Time-decay + frequency boost scoring
@@ -69,6 +71,7 @@ moltbot-config/
 │   └── ux-designer.md        # Interface + experience design
 └── config/                   # Gateway config snippets (JSON5)
     ├── compaction-and-pruning.json5
+    ├── context-overflow-prevention.json5  # NEW: Full defensive config stack
     ├── memory-search.json5
     ├── model-aliases-and-fallbacks.json5
     └── discord-setup.json5
@@ -161,7 +164,10 @@ Add to your `HEARTBEAT.md`:
 Drop these into your `~/.clawdbot/moltbot.json`. Each file is standalone — use what you need.
 
 ### Compaction & Pruning
-The most impactful settings for context management. Key insight: `reserveTokensFloor` controls when compaction triggers. `softThresholdTokens` controls when pre-compaction memory flush fires — keep it at the docs default (4000), not higher.
+The most impactful settings for context management. **Updated from production analysis** with `reserveTokensFloor: 60000` (was 20000) and aggressive context pruning (`cache-ttl: 2m`, tool-targeted pruning). Key insight: `reserveTokensFloor` controls when compaction triggers. `softThresholdTokens` controls when pre-compaction memory flush fires — keep it at the docs default (4000).
+
+### Context Overflow Prevention ⚠️
+**NEW:** Complete defensive config stack for heavy tool usage. Use `context-overflow-prevention.json5` when you have browser automation, bulk web research, or large exec outputs. Includes aggressive pruning, subagent optimization, and tool-specific limits. See `docs/context-overflow-prevention.md` for comprehensive analysis.
 
 ### Model Aliases & Fallbacks
 Switch models with `/model opus` or `/model grok`. Fallbacks ensure you don't error out when your primary provider is down.

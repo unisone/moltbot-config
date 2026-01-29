@@ -1,0 +1,81 @@
+// Context Overflow Prevention — Full defensive config stack
+// This is the most aggressive configuration for preventing context overflow errors.
+// Use when you have heavy tool usage (browser automation, large exec outputs, bulk web research).
+//
+// See docs/context-overflow-prevention.md for comprehensive analysis and explanation.
+
+{
+  agents: {
+    defaults: {
+      // Aggressive compaction with high safety margin
+      compaction: {
+        mode: "default",
+        reserveTokensFloor: 60000,   // High safety margin - triggers compaction early
+        memoryFlush: {
+          enabled: true,
+          softThresholdTokens: 4000  // Pre-compaction memory save
+        }
+      },
+
+      // Aggressive context pruning - short TTL, small limits
+      contextPruning: {
+        mode: "cache-ttl",
+        ttl: "2m",                   // Very short TTL - prune aggressively
+        keepLastAssistants: 2,       // Minimal recent context
+        softTrimRatio: 0.3,         // Compress to 30% of original
+        hardClearRatio: 0.3,        // Remove completely at 30% threshold
+        minPrunableToolChars: 10000, // Prune anything >10K chars
+        tools: {
+          allow: [                  // Target high-volume tools
+            "exec",
+            "Read", 
+            "web_fetch",
+            "browser",
+            "web_search",
+            "gateway"
+          ],
+          deny: [
+            "*image*"              // Never prune image results
+          ]
+        },
+        softTrim: {                 // Conservative truncation
+          maxChars: 2000,          // Small result size after trim
+          headChars: 750,          // Keep start context
+          tailChars: 750           // Keep end context  
+        },
+        hardClear: {                // Complete removal when needed
+          enabled: true,
+          placeholder: "[Large tool result cleared - available in session history]"
+        }
+      },
+
+      // Subagent optimization for heavy tasks
+      subagents: {
+        maxConcurrent: 8,           // Allow many parallel subagents
+        model: "anthropic/claude-opus-4-5" // Use primary model for subagents
+      },
+
+      // Memory system optimization
+      memorySearch: {
+        enabled: true,
+        cache: {
+          enabled: true,
+          maxEntries: 50000        // Large cache to reduce repeated operations
+        }
+      }
+    }
+  },
+
+  // Tool-specific limits to prevent large payloads
+  tools: {
+    web: {
+      fetch: {
+        maxChars: 4000            // Aggressive web fetch limits
+      }
+    },
+    exec: {
+      maxOutputLines: 100,        // Limit exec output size
+      truncateMode: "tail"        // Keep recent output
+    }
+  }
+}
