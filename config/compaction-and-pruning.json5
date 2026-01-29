@@ -1,14 +1,12 @@
 // Compaction & Pruning — Production-tested settings
-// These values are from the official docs + real-world tuning
+// These values are from the official docs + real-world tuning + context overflow research
 //
 // Key insight: reserveTokensFloor controls WHEN compaction triggers.
 // Higher = earlier compaction = less context but safer from overflow.
-// The default (20000) is fine for most setups.
-// If you're hitting context overflow errors, raise it to 40000-60000.
+// The updated default (60000) prevents most overflow scenarios.
 //
 // softThresholdTokens controls when the pre-compaction memory flush fires.
-// Keep this at the docs default (4000) — it should fire RIGHT BEFORE
-// compaction, not halfway through your context window.
+// Keep this at 4000 — it should fire RIGHT BEFORE compaction.
 
 {
   agents: {
@@ -16,7 +14,7 @@
       // Compaction: summarizes older conversation when context fills up
       compaction: {
         mode: "default",
-        reserveTokensFloor: 20000,  // docs default; raise to 60000 if hitting overflow
+        reserveTokensFloor: 60000,   // UPDATED: was 20000, raised for overflow protection
         memoryFlush: {
           enabled: true,             // saves memories to disk before compaction
           softThresholdTokens: 4000  // docs default — fires close to compaction
@@ -27,8 +25,33 @@
       // Does NOT rewrite the session transcript on disk
       contextPruning: {
         mode: "cache-ttl",
-        ttl: "5m",                   // prune when last API call > 5min ago
-        keepLastAssistants: 3        // protect last 3 assistant messages
+        ttl: "2m",                   // UPDATED: was 5m, more aggressive for overflow prevention
+        keepLastAssistants: 2,       // UPDATED: was 3, reduced for context efficiency
+        softTrimRatio: 0.3,         // NEW: compression ratio for large tool results
+        hardClearRatio: 0.3,        // NEW: when to completely remove large results
+        minPrunableToolChars: 10000, // NEW: minimum size before tool results are pruned
+        tools: {
+          allow: [                   // NEW: target specific tools for pruning
+            "exec", 
+            "Read", 
+            "web_fetch", 
+            "browser", 
+            "web_search", 
+            "gateway"
+          ],
+          deny: [
+            "*image*"               // NEW: never prune image results
+          ]
+        },
+        softTrim: {                 // NEW: intelligent truncation
+          maxChars: 2000,          // maximum chars to keep after trimming
+          headChars: 750,          // chars to keep from start
+          tailChars: 750           // chars to keep from end
+        },
+        hardClear: {                // NEW: complete removal of large results
+          enabled: true,
+          placeholder: "[Cleared — re-run tool if needed]"
+        }
       }
     }
   }

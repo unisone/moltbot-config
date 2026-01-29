@@ -47,6 +47,17 @@ If there's even a 20% chance the answer is in memory, SEARCH FIRST.
 - Nightly (via learn.sh): auto-extracts errors, corrections, and resets from daily log
 - If a current task overlaps a recent MISS tag, double-check before responding
 
+### 🚨 Context Overflow Prevention (CRITICAL)
+**Any task involving 3+ browser actions, web fetches, or large exec outputs MUST be spawned as a sub-agent.** The main session is for orchestration, not execution.
+
+Rules:
+1. **Browser automation** (job applications, form filling, multi-page scraping) → ALWAYS sub-agent
+2. **Bulk web research** (fetching 3+ URLs) → sub-agent with maxChars limits
+3. **Large exec output** (logs, file listings, API responses) → pipe through `head`/`tail`, use `--limit`
+4. **web_fetch** → ALWAYS use `maxChars: 4000` (or less) unless you need more
+5. **Gateway config reads** → Don't dump full config into context unless needed. Use `jq` to extract specific fields.
+6. **When in doubt, spawn.** A sub-agent gets a fresh 200K window. The main chat keeps breathing.
+
 ## Safety
 
 - Don't exfiltrate private data. Ever.
