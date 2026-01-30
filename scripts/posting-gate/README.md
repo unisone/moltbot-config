@@ -2,110 +2,84 @@
 
 ## Overview
 
-Technical safeguard system that makes it **physically impossible** for the AI agent to post to social media (X/Twitter, LinkedIn, etc.) without explicit human approval. This is infrastructure-level enforcement, not behavioral rules.
-
-## Problem Statement
-
-- Agent has behavioral rule: "draft to Discord, wait for approval"
-- No TECHNICAL enforcement — malfunction or prompt injection could bypass rules
-- Need system where posting is impossible without human approval
-- Must preserve read access (Bird CLI search/read still works)
+Technical safeguard system that makes it **physically impossible** for the AI agent to post to social media without explicit human approval. Uses Clawdbot's native Lobster workflow engine with approval checkpoints.
 
 ## Architecture
 
 ```
-Agent Request → Gateway Tool Check → BLOCKED (no approval token)
-                    ↓
-Draft to Discord → Human Approval (✅ reaction) → Webhook → Issue Token
-                    ↓
-Agent Retry → Gateway Check → ALLOWED (valid token) → Post to X
+Agent wants to post → Lobster workflow starts → APPROVAL GATE (pauses) → Human approves → Post executes
 ```
 
-## Components
+The agent calls a Lobster pipeline. Lobster halts at the `approve` step and returns a `resumeToken`. The post only executes after a human explicitly approves via:
+- `lobster resume --token <token> --approve yes` (CLI)
+- `/approve <id>` in Discord (when forwarding is enabled)
 
-### 1. Gateway Tool Restrictions (`gateway-config.json`)
-- Blocks standard `message` tool for social platforms
-- Adds approval-gated `message_approved` variant
-- Requires valid approval token in request
+## How It Works
 
-### 2. Discord Approval Server (`approval-server.js`)
-- Webhook server listening for Discord reactions
-- ✅ reaction → Generate one-time approval token
-- ❌ reaction → Deny request
-- Embeds show draft content with approve/deny buttons
-
-### 3. Credential Broker (`token-broker.js`)
-- Issues one-time tokens after human approval
-- Tokens expire after single use or timeout (5 minutes)
-- Maintains audit trail of all approvals
-
-### 4. Agent Tool Wrapper (`approved-message-tool.js`)
-- Modified message tool that checks for approval token
-- Falls back to draft-to-Discord if no approval
-- Handles token refresh and retry logic
+1. **Agent drafts** content in the normal conversation
+2. **Agent calls** the Lobster `social-post` workflow
+3. **Lobster pauses** at the approval gate — returns preview + resume token
+4. **Human reviews** the draft in Discord
+5. **Human approves** → Lobster resumes → `post.js` executes with credentials
+6. **Audit log** records everything to `logs/YYYY-MM-DD.json`
 
 ## Security Properties
 
-✅ **Physically impossible** to post without approval (tool blocked at gateway)  
-✅ **One-time tokens** - Cannot be reused or cached by agent  
-✅ **Fail-secure** - Default deny, must explicitly approve each post  
-✅ **Audit trail** - All requests, approvals, and posts logged  
-✅ **Platform extensible** - Works for X, LinkedIn, any social platform  
-✅ **Read access preserved** - Research tools still work  
+- ✅ **Infrastructure-level enforcement** — Lobster runtime controls execution, not the agent
+- ✅ **Credential isolation** — API keys in `~/.config/` (outside agent workspace `~/clawd`)
+- ✅ **Resume tokens** — cryptographic tokens required to continue past approval gate
+- ✅ **Audit trail** — every post attempt logged with timestamp, content, result
+- ✅ **Platform extensible** — X, LinkedIn, any future platform
+- ✅ **Native Clawdbot integration** — uses built-in Lobster tool, not custom middleware
 
-## Installation
+## Files
 
-1. **Configure Gateway Tool Restrictions**
-   ```bash
-   # Backup current config
-   cp ~/.clawdbot/clawdbot.json ~/.clawdbot/clawdbot.json.backup
-   
-   # Apply posting restrictions
-   node scripts/posting-gate/install-restrictions.js
-   ```
-
-2. **Start Approval Server**
-   ```bash
-   cd ~/clawd/scripts/posting-gate
-   npm install
-   node approval-server.js
-   ```
-
-3. **Test System**
-   ```bash
-   # This should be blocked and draft to Discord
-   echo "Test posting system" | clawdbot message send --target twitter
-   ```
+| File | Purpose |
+|------|---------|
+| `post.js` | Posting script with credential access (X API, LinkedIn API) |
+| `../workflows/social-post.lobster` | Lobster workflow with approval gate |
+| `logs/` | Audit trail (auto-created) |
 
 ## Usage
 
-1. Agent attempts to post → Gets blocked → Drafts to Discord
-2. Discord shows content with ✅ and ❌ buttons
-3. Human clicks ✅ to approve or ❌ to deny
-4. If approved, agent automatically retries and post succeeds
-5. Token expires after use or 5 minutes
-
-## Extension
-
-Add new platforms by:
-1. Adding platform to `RESTRICTED_PLATFORMS` in config
-2. Adding platform-specific credential handling in broker
-3. Testing approval workflow
-
-## Monitoring
-
-- All approval requests logged to `~/clawd/scripts/posting-gate/logs/`
-- Failed posting attempts logged with reasons
-- Weekly reports on approval patterns
-
-## Emergency Override
-
+### Via Lobster CLI (testing)
 ```bash
-# Temporary disable (for emergencies only)
-node scripts/posting-gate/emergency-override.js --disable
+# Start the workflow — will pause at approval
+lobster run --mode tool \
+  'exec --json --shell "echo {\"platform\":\"x\",\"content\":\"Hello world\"}" | approve --preview-from-stdin --prompt "Post this?"'
 
-# Re-enable restrictions  
-node scripts/posting-gate/emergency-override.js --enable
+# Approve and continue
+lobster resume --token <resumeToken> --approve yes
 ```
 
-**⚠️ Warning:** Override should only be used in emergencies and immediately re-enabled.
+### Via Clawdbot Agent
+The agent calls the Lobster tool with the social-post workflow. Approval is forwarded to Discord.
+
+## Credential Locations (outside agent workspace)
+
+- **X/Twitter:** `~/.config/x-api/credentials.json`
+- **LinkedIn:** `~/.linkedin-mcp/tokens_default.json`
+
+The agent at `~/clawd` cannot access these directly. Only `post.js` (called by Lobster after approval) reads them.
+
+## Audit Logs
+
+All posting attempts are logged to `logs/YYYY-MM-DD.json`:
+```json
+{
+  "timestamp": "2026-01-30T17:45:00.000Z",
+  "platform": "x",
+  "content": "Post preview...",
+  "replyTo": null,
+  "status": "posted",
+  "result": { "success": true, "method": "bird-cli" }
+}
+```
+
+## Requirements
+
+- Lobster CLI: `npm install -g @clawdbot/lobster`
+- Node.js 18+
+- Bird CLI (for X posting via cookies)
+- X API credentials (for OAuth posting)
+- LinkedIn OAuth tokens (for LinkedIn posting)
