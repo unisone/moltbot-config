@@ -6,6 +6,10 @@
 
 Every file in this repo is running in production right now. If it's here, it works.
 
+### Security note
+- This repo intentionally contains **no secrets**. Any tokens/keys are referenced via env vars or local files.
+- Config files that need credentials use obvious placeholders like `YOUR_DISCORD_BOT_TOKEN`.
+
 ---
 
 ## Why This Exists
@@ -169,7 +173,7 @@ Add to your `HEARTBEAT.md`:
 
 Drop these into your OpenClaw config at `~/.openclaw/openclaw.json`.
 
-(Legacy installs sometimes used `~/.clawdbot/clawdbot.json` or `~/.clawdbot/moltbot.json`.)
+(Older installs may have used `~/.clawdbot/clawdbot.json` or `~/.clawdbot/moltbot.json`.)
 
 Each file is standalone — use what you need.
 
