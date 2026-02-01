@@ -1,287 +1,107 @@
 # openclaw-config
 
-> Production configs, memory scripts, and workspace templates for **OpenClaw** — built from real daily usage, not theory.
->
-> Upstream repo: https://github.com/openclaw/openclaw
+Battle-tested configs, scripts, and workspace templates for **OpenClaw / Moltbot (Clawdbot)**.
 
-Every file in this repo is running in production right now. If it's here, it works.
+- Upstream: https://github.com/openclaw/openclaw
+- This repo is **not** an SDK or plugin — it’s a set of *copyable* building blocks.
 
----
+## What you get
 
-## Why This Exists
+- **Memory Engine** (`scripts/memory-engine/`): capture → recall → decay → learn (nightly) + self-review (MISS/FIX) from real logs
+- **Gateway config snippets** (`config/*.json5`): compaction, pruning, model fallbacks, Discord setup, memory search
+- **Workspace templates** (`templates/`): `AGENTS.md`, `SOUL.md`, `HEARTBEAT.md`, etc.
+- **Optional content pipeline** (`content-pipeline/`): cron-driven draft → approval → post → metrics loop
 
-OpenClaw ships with sane defaults, but the default setup has gaps:
+## Who this is for
 
-- **Memory is flat files** — no scoring, no decay, no pattern detection
-- **No self-correction loop** — the agent repeats the same mistakes across sessions
-- **Compaction is lossy** — important context vanishes when the window fills up
-- **Config docs are scattered** — hard to know which settings actually matter
+You’ll like this repo if you:
 
-This repo fixes all of that with tested scripts and configs you can drop into any OpenClaw workspace.
+- run OpenClaw daily and want your setup to be **more stable under heavy tool usage**
+- are tired of “self-improvement” prompts that don’t stick
+- want a practical starting point for a *real* workspace (templates + scripts), not a blank folder
 
----
+## Safety / privacy (read before copying)
 
-## Quickstart
+These files are meant to be copied into your workspace, which means you should treat them like production config:
+
+- **Never commit secrets** (API keys, tokens, cookie DBs)
+- Skim any file before you copy it; some templates contain placeholder personal details
+- If you fork this repo: keep it clean (no private data, no logs)
+
+## Quickstart (recommended)
+
+Pick only what you want. Most people start with **templates + memory engine**.
 
 ```bash
-# Clone into your OpenClaw workspace
+# 1) Clone
 git clone https://github.com/unisone/openclaw-config.git
-cp -r openclaw-config/scripts/memory-engine/ /path/to/workspace/scripts/memory-engine/
-cp -r openclaw-config/templates/* /path/to/workspace/
-cp -r openclaw-config/agents/ /path/to/workspace/agents/
-cp -r openclaw-config/config/ /path/to/workspace/docs/config-examples/
+cd openclaw-config
 
-# Make scripts executable
-chmod +x /path/to/workspace/scripts/memory-engine/*.sh
+# 2) Copy templates into your workspace (edit them after)
+# Replace ~/clawd with your OpenClaw workspace path.
+rsync -av templates/ ~/clawd/
 
-# Run your first capture
-bash scripts/memory-engine/capture.sh
-
-# Test recall
-bash scripts/memory-engine/recall.sh "your query here"
-```
-
----
-
-## What's Inside
-
-```
-openclaw-config/
-├── docs/                     # Comprehensive analysis and guides
-│   └── context-overflow-prevention.md  # Root cause analysis + all config options
-├── scripts/memory-engine/    # Memory scoring, decay, self-review
-│   ├── capture.sh            # Extract structured memories from logs
-│   ├── decay.sh              # Time-decay + frequency boost scoring
-│   ├── learn.sh              # Nightly: capture → decay → self-review → insights
-│   ├── recall.sh             # Context-aware pre-load at session start
-│   ├── self-review.sh        # Extract MISS/FIX pairs from actual errors
-│   └── config.json           # Tuning parameters
-├── content-pipeline/         # Automated content creation pipeline
-│   ├── README.md             # Setup guide + scoring system
-│   ├── CONTENT-PIPELINE-V2.md # Full pipeline spec (crons read this)
-│   └── voice-and-strategy.md # Voice, tone, posting rules
-├── templates/                # Workspace bootstrap files
-│   ├── AGENTS.md             # Operating instructions + memory protocol
-│   ├── SOUL.md               # Persona, tone, anti-slop rules
-│   ├── HEARTBEAT.md          # Proactive checks + self-review on boot
-│   ├── IDENTITY.md           # Agent name/emoji/vibe
-│   └── USER.md               # User profile template
-├── agents/                   # Multi-agent personas
-│   ├── architect.md          # System design + architecture
-│   ├── content-writer.md     # Writing with voice, not slop
-│   ├── deep-researcher.md    # Thorough multi-source research
-│   ├── devils-advocate.md    # Challenge assumptions
-│   ├── market-researcher.md  # Competitive analysis
-│   ├── project-planner.md    # Scoping + task breakdown
-│   ├── security-auditor.md   # Threat modeling + hardening
-│   └── ux-designer.md        # Interface + experience design
-└── config/                   # Gateway config snippets (JSON5)
-    ├── compaction-and-pruning.json5
-    ├── context-overflow-prevention.json5  # NEW: Full defensive config stack
-    ├── memory-search.json5
-    ├── model-aliases-and-fallbacks.json5
-    └── discord-setup.json5
-```
-
----
-
-## Memory Engine
-
-The default OpenClaw memory is append-only markdown files. This engine adds scoring, decay, pattern detection, and self-correction on top.
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    MEMORY ENGINE                         │
-├──────────┬──────────┬──────────────┬────────────────────┤
-│ CAPTURE  │  RECALL  │    DECAY     │      LEARN         │
-│ (live)   │ (boot)   │  (daily)     │   (nightly)        │
-├──────────┼──────────┼──────────────┼────────────────────┤
-│ Extract  │ Keyword  │ Score by     │ Consolidate →      │
-│ facts,   │ weighted │ relevance,   │ self-review →      │
-│ prefs,   │ search   │ frequency,   │ pattern detect →   │
-│ decisions│ to pre-  │ recency      │ generate insights  │
-│ from     │ load     │              │                    │
-│ daily    │ relevant │ Archive low  │ MISS/FIX pairs     │
-│ logs     │ on boot  │ scorers      │ from real errors   │
-└──────────┴──────────┴──────────────┴────────────────────┘
-                          │
-                    memory/store.json
-```
-
-### Self-Review System
-
-Most "self-improvement" approaches tell the LLM to reflect on its mistakes. The problem: **vague self-reflection is just confabulation**. The model invents plausible-sounding self-critique that may not reflect real problems.
-
-Our approach: **extract MISS/FIX pairs from actual logged errors.**
-
-```bash
-$ bash scripts/memory-engine/self-review.sh 2026-01-29
-
-🔍 Self-review: 2026-01-29
-   Daily file: 115 lines
-   Signals: errors=15 corrections=1 resets=3
-   ✅ Review entry written
-```
-
-Output in `memory/self-review.md`:
-```
-## 2026-01-29
-
-**Errors detected: 15**
-- MISS: context overflow error leaked to user channel
-- MISS: compaction triggered with wrong softThresholdTokens
-
-**Corrections: 1**
-- FIX: reset softThresholdTokens to docs default (4000)
-
-**Tags:**
-- [reliability] Multiple errors — check tooling stability
-- [stability] Multiple resets — investigate root cause
-```
-
-On boot, the agent reads `self-review.md` and double-checks when current work overlaps a past MISS tag. Real signal, not vibes.
-
-### Setup
-
-```bash
-# Copy to your workspace
-cp -r scripts/memory-engine/ ~/clawd/scripts/memory-engine/
+# 3) Copy the memory engine
+mkdir -p ~/clawd/scripts/
+rsync -av scripts/memory-engine/ ~/clawd/scripts/memory-engine/
 chmod +x ~/clawd/scripts/memory-engine/*.sh
 
-# Run the full nightly cycle manually
-bash ~/clawd/scripts/memory-engine/learn.sh
+# 4) Run an initial capture (creates/updates memory/store.json)
+cd ~/clawd
+bash scripts/memory-engine/capture.sh
 
-# Or set up an OpenClaw cron job (runs at 3 AM daily)
-# The learn.sh script chains: capture → decay → self-review → insights
+# 5) Try recall
+bash scripts/memory-engine/recall.sh "context overflow" 
 ```
 
-Add to your `HEARTBEAT.md`:
-```markdown
-### Self-Review (session start + nightly)
-- [ ] On boot: read `memory/self-review.md` — check recent MISS/FIX entries
-- [ ] Nightly (via learn.sh): auto-extracts errors from daily log
-- [ ] If current task overlaps a MISS tag, double-check before responding
+### Add the nightly job
+
+Run nightly learning (capture → decay → self-review → insights):
+
+- Option A: add a cron job in OpenClaw that runs `bash scripts/memory-engine/learn.sh`
+- Option B: run it manually at first to confirm it matches your workflow
+
+## Gateway config snippets
+
+Config examples live in `config/*.json5`.
+
+Typical workflow:
+
+1. Open your OpenClaw config file (`~/.openclaw/openclaw.json` on most installs)
+2. Copy the snippet you need
+3. Merge it into your config (don’t blindly replace)
+
+Start here:
+
+- `config/compaction-and-pruning.json5` — highest impact stability settings
+- `config/context-overflow-prevention.json5` — defensive settings for heavy tool use
+- `config/model-aliases-and-fallbacks.json5` — provider fallbacks
+- `config/memory-search.json5` — semantic search over memory files
+- `config/discord-setup.json5` — practical Discord defaults
+
+## Repo layout
+
+```text
+openclaw-config/
+  agents/               # Multi-agent persona prompts
+  config/               # JSON5 snippets you can merge into your gateway config
+  content-pipeline/     # Optional: cron-driven content workflow
+  docs/                 # Deep dives (e.g., context overflow prevention)
+  scripts/memory-engine/# Capture/recall/decay/learn + self-review
+  templates/            # Workspace bootstrap files
+  workflows/            # Optional Lobster workflows
 ```
-
----
-
-## Gateway Config Snippets
-
-Drop these into your OpenClaw config at `~/.openclaw/openclaw.json`.
-
-(Legacy installs sometimes used `~/.clawdbot/clawdbot.json` or `~/.clawdbot/moltbot.json`.)
-
-Each file is standalone — use what you need.
-
-### Compaction & Pruning
-The most impactful settings for context management. **Updated from production analysis** with `reserveTokensFloor: 60000` (was 20000) and aggressive context pruning (`cache-ttl: 2m`, tool-targeted pruning). Key insight: `reserveTokensFloor` controls when compaction triggers. `softThresholdTokens` controls when pre-compaction memory flush fires — keep it at the docs default (4000).
-
-### Context Overflow Prevention ⚠️
-**NEW:** Complete defensive config stack for heavy tool usage. Use `context-overflow-prevention.json5` when you have browser automation, bulk web research, or large exec outputs. Includes aggressive pruning, subagent optimization, and tool-specific limits. See `docs/context-overflow-prevention.md` for comprehensive analysis.
-
-### Model Aliases & Fallbacks
-Switch models with `/model opus` or `/model grok`. Fallbacks ensure you don't error out when your primary provider is down.
-
-### Memory Search
-Vector-powered semantic search over your memory files. Uses OpenAI embeddings by default (cheapest option).
-
-### Discord Setup
-Production Discord config with idle session management (7-day reset instead of daily).
-
----
-
-## Workspace Templates
-
-The `templates/` folder contains ready-to-use workspace files. Copy them to `~/clawd/` and customize.
-
-Key features:
-- **AGENTS.md** — Memory search protocol, self-review integration, file-over-memory philosophy
-- **SOUL.md** — Anti-slop rules that actually work (no "delve", no sycophantic openers, no em dash addiction)
-- **HEARTBEAT.md** — Structured proactive checks with memory engine integration
-- **USER.md** — Template for teaching your agent about you
-
----
-
-## Agent Personas
-
-Pre-built personas for multi-agent workflows (Council of the Wise pattern, sub-agent spawning):
-
-| Persona | Use Case |
-|---------|----------|
-| **Architect** | System design, tech stack decisions, scalability |
-| **Content Writer** | Writing with authentic voice, not AI slop |
-| **Deep Researcher** | Multi-source research with citations |
-| **Devil's Advocate** | Challenge assumptions, find blind spots |
-| **Market Researcher** | Competitive analysis, market sizing |
-| **Project Planner** | Scoping, task breakdown, timeline estimation |
-| **Security Auditor** | Threat modeling, config hardening, key rotation |
-| **UX Designer** | Interface design, user flows, accessibility |
-
----
-
-## Content Pipeline
-
-Automated content creation for X and LinkedIn — 3 crons replace 8+.
-
-```
-SCAN → DRAFT → APPROVE → POST → MEASURE → LEARN
- 2h      auto    human     auto    3h post    weekly
-```
-
-Topics get scored 1-10 on recency, engagement velocity, pillar relevance, and uniqueness. High scorers auto-draft and go to Discord for human approval. Metrics feed back into scoring weights.
-
-See `content-pipeline/` for the full spec, scoring system, and voice guide.
-
----
-
-## Config Philosophy
-
-1. **Docs defaults unless there's a reason** — don't change settings you don't understand
-2. **Files over memory** — write it down; "mental notes" don't survive sessions
-3. **Signal over vibes** — self-review from actual errors, not vague introspection
-4. **Compaction-aware** — save important state to disk before the context window fills up
-5. **Test before sharing** — everything here is running in production
-
----
-
-## Example Output
-
-After running the nightly `learn.sh` cycle, the engine generates `memory/insights.md`. Here's what a real one looks like:
-
-```markdown
-## Insights — 2026-01-30
-
-- User prefers concise responses — avoid lengthy explanations unless asked
-- Project "homelab" referenced 8 times this week — likely active focus area
-- Correction pattern: agent keeps using deprecated API endpoint for notifications
-- Decision logged: switched from OpenAI embeddings to local model for cost savings
-- Person "Alex" mentioned in 3 separate contexts — may need a dedicated memory entry
-- Recurring preference: no emoji in technical docs, emoji OK in casual chat
-```
-
----
-
-No tests yet — contributions welcome.
-
----
 
 ## Contributing
 
-PRs welcome. If you've built a config, script, or template that improved your OpenClaw setup, share it.
+PRs welcome, but keep it strict:
 
-Rules:
-- Must be tested in a real OpenClaw workspace
-- No personal data (API keys, usernames, emails)
-- Include comments explaining *why*, not just *what*
+- **Must be tested** in a real OpenClaw workspace
+- **No personal data** (keys, usernames, emails, logs)
+- Explain *why* a setting/script exists, not just what it does
 
-## Also By @unisone
-
-| Project | What It Does | Install |
-|---------|-------------|---------|
-| [intel-skill](https://github.com/unisone/intel-skill) | Market intelligence for Claude Code — gaps, competitors, sentiment, pricing | `npx skills add unisone/intel-skill` |
-| [claude-learner](https://github.com/unisone/claude-learner) | Auto-generate CLAUDE.md improvements from session analysis | `npm install -g claude-learner` |
-| [agentpulse](https://github.com/unisone/agentpulse) | Real-time agent monitoring dashboard | [Live demo](https://dashboard-sandy-zeta-76.vercel.app) |
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
-MIT
+MIT (see [LICENSE](./LICENSE))
