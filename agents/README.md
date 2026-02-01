@@ -2,7 +2,7 @@
 
 A collection of specialized expert agents for OpenClaw. Each agent is researched, optimized, and ready to deploy for specific tasks.
 
-(Naming note: OpenClaw was previously Clawdbot/Moltbot.)
+(Naming note: some older posts may use legacy names.)
 
 ## The Roster
 
@@ -66,4 +66,4 @@ These aren't generic agents — each one is researched and configured to be **be
 
 ---
 
-*Built with OpenClaw (formerly Moltbot/Clawdbot) — 2026*
+*Built with OpenClaw — 2026*

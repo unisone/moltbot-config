@@ -4,7 +4,7 @@
 
 Context overflow errors are a critical issue in OpenClaw sessions that perform heavy tool use.
 
-(Formerly Clawdbot/Moltbot — some older links/logs may use those names.) The 200K token context window fills rapidly with large tool results, causing sessions to fail with "Context overflow: prompt too large for the model" errors that leak into Discord.
+The 200K token context window fills rapidly with large tool results, causing sessions to fail with "Context overflow: prompt too large for the model" errors that leak into Discord.
 
 Based on comprehensive research of GitHub issues, documentation, and recent fixes, this document provides:
 - Root cause analysis
@@ -18,7 +18,7 @@ Based on comprehensive research of GitHub issues, documentation, and recent fixe
 ### 1. Gateway Tool Schema Bloat (Primary Cause)
 **Issue #2254/#1808**: The gateway tool returns massive JSON responses (396KB+ per call) containing the entire OpenClaw configuration schema. These are stored in session `.jsonl` files and never pruned.
 
-**Naming note (Jan 2026):** Clawdbot → Moltbot → OpenClaw. If you see old paths in this doc, translate to OpenClaw equivalents.
+If you see legacy paths in older posts or logs, translate them to the OpenClaw equivalents.
 
 **Evidence**:
 - Sessions with only 35 Telegram messages grow to 2.9MB

@@ -4,7 +4,7 @@
 
 Technical safeguard system that makes it **physically impossible** for the AI agent to post to social media without explicit human approval.
 
-**Naming note:** OpenClaw was previously Clawdbot/Moltbot. Some tooling (e.g. `@clawdbot/lobster`) may still carry the old package name even though the runtime is now OpenClaw.
+**Naming note:** Some tooling (e.g. the Lobster CLI package name) may still carry an older package name even though the runtime is OpenClaw.
 
 This gate uses the Lobster workflow engine with approval checkpoints.
 
