@@ -1,6 +1,6 @@
 # openclaw-config
 
-> Production configs, memory scripts, and workspace templates for **OpenClaw** (formerly Moltbot/Clawdbot) — built from real daily usage, not theory.
+> Production configs, memory scripts, and workspace templates for **OpenClaw** — built from real daily usage, not theory.
 >
 > Upstream repo: https://github.com/openclaw/openclaw
 
@@ -18,9 +18,6 @@ OpenClaw ships with sane defaults, but the default setup has gaps:
 - **Config docs are scattered** — hard to know which settings actually matter
 
 This repo fixes all of that with tested scripts and configs you can drop into any OpenClaw workspace.
-
-## Naming Note (Jan 2026)
-OpenClaw was previously called **Moltbot** and **Clawdbot**. Some paths and filenames in this repo (and in older blog posts) may still use the old names. Where possible, docs below show the **current OpenClaw paths** and mention legacy ones when people might still have them.
 
 ---
 
