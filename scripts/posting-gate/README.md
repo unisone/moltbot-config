@@ -2,7 +2,11 @@
 
 ## Overview
 
-Technical safeguard system that makes it **physically impossible** for the AI agent to post to social media without explicit human approval. Uses Clawdbot's native Lobster workflow engine with approval checkpoints.
+Technical safeguard system that makes it **physically impossible** for the AI agent to post to social media without explicit human approval.
+
+**Naming note:** OpenClaw was previously Clawdbot/Moltbot. Some tooling (e.g. `@clawdbot/lobster`) may still carry the old package name even though the runtime is now OpenClaw.
+
+This gate uses the Lobster workflow engine with approval checkpoints.
 
 ## Architecture
 
@@ -30,7 +34,7 @@ The agent calls a Lobster pipeline. Lobster halts at the `approve` step and retu
 - ✅ **Resume tokens** — cryptographic tokens required to continue past approval gate
 - ✅ **Audit trail** — every post attempt logged with timestamp, content, result
 - ✅ **Platform extensible** — X, LinkedIn, any future platform
-- ✅ **Native Clawdbot integration** — uses built-in Lobster tool, not custom middleware
+- ✅ **Native OpenClaw integration** — uses Lobster workflows, not custom middleware
 
 ## Files
 
@@ -52,8 +56,8 @@ lobster run --mode tool \
 lobster resume --token <resumeToken> --approve yes
 ```
 
-### Via Clawdbot Agent
-The agent calls the Lobster tool with the social-post workflow. Approval is forwarded to Discord.
+### Via OpenClaw Agent
+The agent calls the Lobster tool with the `social-post` workflow. Approval is forwarded to Discord.
 
 ## Credential Locations (outside agent workspace)
 
