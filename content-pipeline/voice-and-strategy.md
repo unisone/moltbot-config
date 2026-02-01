@@ -16,7 +16,7 @@
 - Short punchy sentences. No fluff.
 
 ## Content Pillars
-1. **AI Agents & Infrastructure** — Moltbot/Clawdbot ecosystem, Cloudflare, deployment
+1. **AI Agents & Infrastructure** — OpenClaw ecosystem, Cloudflare, deployment
 2. **Building in Public** — what we're shipping, lessons learned
 3. **Security & Privacy** — AI agent risks, best practices, incidents
 4. **Developer Tools** — frameworks, APIs, workflows that matter
