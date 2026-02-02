@@ -1,6 +1,11 @@
-// Model Aliases & Fallbacks
-// Aliases let you switch models with /model opus or /model grok
-// Fallbacks ensure you don't just error out if your primary is down
+// Model Aliases & Fallbacks — Production setup (Feb 2026)
+// Source: real running config from ~/.openclaw/openclaw.json (secrets removed).
+//
+// Goals:
+// - A strong default model for main work
+// - Reliable fallbacks if a provider is down / rate-limited
+// - A fast/cheap model for subagents
+// - Short aliases for quick switching (e.g., /model opus)
 
 {
   agents: {
@@ -8,16 +13,32 @@
       model: {
         primary: "anthropic/claude-opus-4-5",
         fallbacks: [
-          "openai/gpt-4o",
-          "xai/grok-4-latest"
+          "anthropic/claude-sonnet-4-5",
+          "openai-codex/gpt-5.2"
         ]
       },
+
+      // Aliases: case-sensitive aliases are supported, so we include both "opus" and "Opus".
       models: {
+        "opencode/kimi-k2.5-free": { alias: "kimi" },
+
         "anthropic/claude-opus-4-5": { alias: "opus" },
-        "anthropic/claude-sonnet-4-20250514": { alias: "sonnet" },
-        "openai/gpt-4o": { alias: "gpt" },
-        "xai/grok-4-latest": { alias: "grok" },
-        "openrouter/moonshotai/kimi-k2.5": { alias: "kimi" }
+        "opencode/claude-opus-4-5": { alias: "Opus" },
+
+        "anthropic/claude-sonnet-4-5": { alias: "sonnet" },
+
+        // Included explicitly so it can be selected directly if desired.
+        "openai-codex/gpt-5.2": {}
+      },
+
+      subagents: {
+        model: {
+          primary: "opencode/kimi-k2.5-free",
+          fallbacks: [
+            "anthropic/claude-sonnet-4-5",
+            "openai-codex/gpt-5.2"
+          ]
+        }
       }
     }
   }
