@@ -1,81 +1,69 @@
-// Context Overflow Prevention — Full defensive config stack
-// This is the most aggressive configuration for preventing context overflow errors.
-// Use when you have heavy tool usage (browser automation, large exec outputs, bulk web research).
+// Context Overflow Prevention — Production defensive stack (Feb 2026)
+// Source: real running config from ~/.openclaw/openclaw.json (secrets removed).
 //
-// See docs/context-overflow-prevention.md for comprehensive analysis and explanation.
+// This is the *balanced* production setup (not the "maximum aggression" lab config).
+// Use when you do heavy tool work (browser runs, large exec outputs, multi-fetch research).
 
 {
   agents: {
     defaults: {
-      // Aggressive compaction with high safety margin
+      // Compaction tuned for overflow prevention without over-summarizing.
       compaction: {
-        mode: "default",
-        reserveTokensFloor: 60000,   // High safety margin - triggers compaction early
+        mode: "safeguard",
+        reserveTokensFloor: 40000,
+        maxHistoryShare: 0.6,
         memoryFlush: {
           enabled: true,
-          softThresholdTokens: 4000  // Pre-compaction memory save
+          softThresholdTokens: 120000,
+          prompt: "If you are approaching context limits, write key state/decisions to memory/YYYY-MM-DD.md before compaction triggers."
         }
       },
 
-      // Aggressive context pruning - short TTL, small limits
+      // Pruning tuned to protect context window from massive tool payloads.
       contextPruning: {
         mode: "cache-ttl",
-        ttl: "2m",                   // Very short TTL - prune aggressively
-        keepLastAssistants: 2,       // Minimal recent context
-        softTrimRatio: 0.3,         // Compress to 30% of original
-        hardClearRatio: 0.3,        // Remove completely at 30% threshold
-        minPrunableToolChars: 10000, // Prune anything >10K chars
-        tools: {
-          allow: [                  // Target high-volume tools
-            "exec",
-            "Read", 
-            "web_fetch",
-            "browser",
-            "web_search",
-            "gateway"
-          ],
-          deny: [
-            "*image*"              // Never prune image results
-          ]
+        ttl: "5m",
+        keepLastAssistants: 3,
+        softTrimRatio: 0.3,
+        hardClearRatio: 0.3,
+        minPrunableToolChars: 50000,
+        softTrim: {
+          maxChars: 4000,
+          headChars: 750,
+          tailChars: 750
         },
-        softTrim: {                 // Conservative truncation
-          maxChars: 2000,          // Small result size after trim
-          headChars: 750,          // Keep start context
-          tailChars: 750           // Keep end context  
-        },
-        hardClear: {                // Complete removal when needed
+        hardClear: {
           enabled: true,
-          placeholder: "[Large tool result cleared - available in session history]"
+          placeholder: "[Cleared — re-run tool if needed]"
         }
       },
 
-      // Subagent optimization for heavy tasks
+      // Subagents: keep parallel work fast/cheap and auto-archive to reduce clutter.
       subagents: {
-        maxConcurrent: 8,           // Allow many parallel subagents
-        model: "anthropic/claude-opus-4-5" // Use primary model for subagents
-      },
-
-      // Memory system optimization
-      memorySearch: {
-        enabled: true,
-        cache: {
-          enabled: true,
-          maxEntries: 50000        // Large cache to reduce repeated operations
+        maxConcurrent: 8,
+        archiveAfterMinutes: 60,
+        model: {
+          primary: "opencode/kimi-k2.5-free",
+          fallbacks: [
+            "anthropic/claude-sonnet-4-5",
+            "openai-codex/gpt-5.2"
+          ]
         }
       }
     }
   },
 
-  // Tool-specific limits to prevent large payloads
+  // Tool caching helps reduce repeated large responses (and cost).
   tools: {
     web: {
+      search: {
+        cacheTtlMinutes: 15
+      },
       fetch: {
-        maxChars: 4000            // Aggressive web fetch limits
+        cacheTtlMinutes: 10,
+        timeoutSeconds: 25,
+        maxChars: 8000
       }
-    },
-    exec: {
-      maxOutputLines: 100,        // Limit exec output size
-      truncateMode: "tail"        // Keep recent output
     }
   }
 }
