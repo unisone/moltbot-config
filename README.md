@@ -1,229 +1,215 @@
-# openclaw-config
+<p align="center">
+  <img src="docs/assets/openclaw-config-cover.png" alt="openclaw-config" width="600" />
+</p>
 
-Battle-tested configs, scripts, and workspace templates for **OpenClaw**.
+<h1 align="center">openclaw-config</h1>
 
-- Upstream: https://github.com/openclaw/openclaw
-- This repo is **not** an SDK or plugin - it's a set of *copyable* building blocks.
+<p align="center">
+  Production-tested configs, scripts, and workspace templates for <a href="https://github.com/openclaw/openclaw">OpenClaw</a>.<br />
+  Not an SDK — just copyable building blocks from a real daily-driver setup.
+</p>
 
-## What you get
+<p align="center">
+  <a href="#quickstart">Quickstart</a> •
+  <a href="#whats-included">What's Included</a> •
+  <a href="#gateway-config-snippets">Configs</a> •
+  <a href="#skill-routing-overrides">Skills</a> •
+  <a href="#workspace-templates">Templates</a> •
+  <a href="#contributing">Contributing</a>
+</p>
 
-- **Memory Engine** (`scripts/memory-engine/`): capture → recall → decay → learn (nightly) + self-review (MISS/FIX) from real logs
-- **Task Runner** (`scripts/taskrunner/`): Python-based task automation with retry logic, locking, and structured logging
-- **Gateway config snippets** (`config/*.json5`): compaction, pruning, model fallbacks, Discord setup, memory search
-- **Workspace templates** (`templates/`): `AGENTS.md`, `SOUL.md`, `HEARTBEAT.md`, `STATE.md`, `IDENTITY.md`, `USER.md`, `artifacts/`
-- **Skill routing overrides** (`skills/`): Workspace-level SKILL.md overrides that reduce misfires in overlapping domains (email, notes, transcription, messaging)
-- **Docs** (`docs/`): Deep operational guides (session context overflow, agent memory research, skill routing)
-- **Optional content pipeline** (`content-pipeline/`): cron-driven draft → approval → post → metrics loop
+---
 
-## What's New (Feb 12, 2026)
+## Quickstart
 
-**🎯 Skill Routing Overrides** (`skills/`)
-- Workspace-level SKILL.md overrides for 11 skills across 6 overlapping domains
-- Each override adds "Don't use for..." negative examples to reduce misfires
-- Based on OpenAI's "Shell + Skills + Compaction" guidance (Glean saw 20% misfire reduction)
-- Covers: email (gog/himalaya), notes (apple-notes/bear/obsidian/notion), transcription (whisper/whisper-api), messaging (imsg), code (coding-agent), summarize
-- Full audit report and documentation in `docs/skill-routing-improvements.md`
+Pick what you need. Most people start with **templates** or **templates + task runner**.
 
-**🔄 STATE.md — Live Working Context** (new template)
-- Short-term memory that survives compaction and session resets
-- Max 3KB, auto-pruned during heartbeats
-- Priority markers (🔴 ACTIVE / 🟡 WAITING / ⚪ DONE)
-- Loaded every session alongside SOUL.md, USER.md, and MEMORY.md
+```bash
+# Clone
+git clone https://github.com/unisone/openclaw-config.git
+cd openclaw-config
 
-**📁 Artifacts Convention** (`templates/artifacts/`)
-- Structured output directory for agent-generated reports, code, data, images
-- Pattern: Tools write to disk → Models reason over disk → Developers retrieve from disk
+# Copy templates into your workspace
+rsync -av templates/ ~/.openclaw/workspace/
 
-**📝 Template Improvements:**
-- **`AGENTS.md`** — Added STATE.md integration, artifacts convention, "Write It Down" mandate
-- **`HEARTBEAT.md`** — Added STATE.md maintenance, self-improvement rotation, ClawHub/GitHub checks
-- **`SOUL.md`** — Added Growth section: research better approaches, identify inefficiencies, propose improvements
+# (Optional) Copy the task runner
+rsync -av scripts/taskrunner/ ~/.openclaw/workspace/scripts/taskrunner/
 
-## What's New (Feb 11, 2026)
+# (Optional) Copy skill routing overrides
+rsync -av skills/ ~/.openclaw/workspace/skills/
+```
 
-**🔥 Major Template Overhaul:**
-- **`AGENTS.md`** - Expanded with heartbeat system, group chat etiquette, emoji reactions, memory maintenance, cron vs heartbeat guidance, platform formatting rules, and voice storytelling tips (~220 lines)
-- **`HEARTBEAT.md`** - Rewritten to focused operational format with quick checks (daily memory file, cron health, inbox/calendar rotation)
-- **`IDENTITY.md`** - Added avatar and creature fields for agent personalization
-- **`SOUL.md`** - Refined and polished core agent philosophy
+> **Note:** Replace `~/.openclaw/workspace/` with your actual workspace path if different.
 
-**🐍 New: Python Task Runner** (`scripts/taskrunner/`)
-- Replace fragile shell scripts with Python-based task automation
-- Built-in retry logic with exponential backoff
-- File locking to prevent concurrent runs
+---
+
+## What's Included
+
+| Directory | Description |
+|-----------|-------------|
+| `templates/` | Workspace bootstrap files — `AGENTS.md`, `SOUL.md`, `STATE.md`, `HEARTBEAT.md`, `IDENTITY.md`, `USER.md`, `artifacts/` |
+| `skills/` | Workspace-level SKILL.md overrides that reduce misfires in overlapping domains |
+| `config/` | Gateway config snippets (JSON5) — compaction, pruning, model fallbacks, memory, search |
+| `scripts/memory-engine/` | Shell-based memory lifecycle: capture → recall → decay → learn + self-review |
+| `scripts/taskrunner/` | Python task automation with retry logic, file locking, structured logging |
+| `agents/` | Multi-agent persona prompts (researcher, architect, security auditor, etc.) |
+| `docs/` | Operational guides — context overflow, agent memory research, skill routing |
+| `content-pipeline/` | Optional cron-driven content workflow: draft → approve → post → metrics |
+
+---
+
+## Workspace Templates
+
+The `templates/` directory provides a complete workspace scaffold:
+
+- **`AGENTS.md`** — Session boot sequence, memory hierarchy, group chat etiquette, heartbeat system, artifact conventions (~220 lines of battle-tested instructions)
+- **`SOUL.md`** — Agent personality and philosophy. Opinionated by design — edit to match your style.
+- **`STATE.md`** — Live working context (max 3KB). Survives compaction and session resets. Priority markers: 🔴 ACTIVE / 🟡 WAITING / ⚪ DONE
+- **`HEARTBEAT.md`** — Proactive check template: STATE maintenance, cron health, inbox/calendar rotation, self-improvement
+- **`IDENTITY.md`** — Agent identity (name, emoji, avatar, history)
+- **`USER.md`** — About the human (preferences, projects, context)
+- **`artifacts/`** — Structured output directory: `reports/`, `code/`, `data/`, `images/`, `temp/`
+
+---
+
+## Skill Routing Overrides
+
+OpenClaw's bundled skills sometimes collide in overlapping domains. These workspace-level overrides add **"Don't use for..."** negative examples to improve routing accuracy.
+
+| Domain | Skills | Routing Logic |
+|--------|--------|---------------|
+| Email | `gog`, `himalaya` | gog → Gmail/Google Workspace · himalaya → IMAP/SMTP |
+| Notes | `apple-notes`, `bear-notes`, `obsidian`, `notion` | Each gets explicit boundaries against the others |
+| Transcription | `openai-whisper`, `openai-whisper-api` | Local CLI vs cloud API |
+| Messaging | `imsg` | Fallback iMessage CLI; prefer bluebubbles if available |
+| Code | `coding-agent` | Multi-step coding sessions; not for simple shell commands |
+| Summarize | `summarize` | URLs/podcasts/files; not for simple HTML extraction |
+
+Based on OpenAI's [Shell + Skills + Compaction](https://openai.com) guidance — Glean reported **20% misfire reduction** after adding negative examples.
+
+> Overrides mask bundled updates. When OpenClaw ships improved descriptions upstream, delete the override to fall back. Tracked in [openclaw/openclaw#14748](https://github.com/openclaw/openclaw/issues/14748).
+
+---
+
+## Gateway Config Snippets
+
+Production-tested config examples in `config/*.json5`. **Merge into your config — don't replace.**
+
+### Essential
+
+| Config | What It Does |
+|--------|-------------|
+| `compaction-and-pruning.json5` | Highest-impact stability settings (reserve tokens, soft thresholds) |
+| `context-overflow-prevention.json5` | Defensive settings for heavy tool use |
+| `model-aliases-and-fallbacks.json5` | Provider fallbacks (Opus → Sonnet → GPT) |
+| `memory-search.json5` | Semantic search over workspace memory files |
+
+### Power User
+
+| Config | What It Does |
+|--------|-------------|
+| `pro-optimization.json5` | Maximum capability without sacrificing stability — longer sessions, faster recovery, aggressive caching |
+| `feature-unlocks.json5` | Enable production-ready features that ship disabled by default — auto-analysis, link fetch, typing indicator, heartbeats |
+| `memory-lancedb-setup.json5` | LanceDB + OpenAI embeddings for long-term memory |
+| `web-search-perplexity.json5` | Perplexity search (no rate limits with paid key) |
+
+```bash
+# Apply configs, then restart
+openclaw gateway restart
+```
+
+> **Tip:** Apply `pro-optimization` first, run for a few days, then add `feature-unlocks`. Changing everything at once makes debugging harder.
+
+---
+
+## Scripts
+
+### Memory Engine (`scripts/memory-engine/`)
+
+Shell-based memory lifecycle: `capture.sh` → `recall.sh` → `decay.sh` → `learn.sh`
+
+- Nightly learning extracts errors, corrections, and insights from daily logs
+- Self-review system (MISS/FIX tags) prevents repeated mistakes
+- See `scripts/memory-engine/README.md` for setup
+
+### Task Runner (`scripts/taskrunner/`)
+
+Python-based task automation — replacement for fragile shell scripts:
+
+- Retry logic with exponential backoff
+- File locking (no concurrent runs)
 - Structured JSON logging (`logs/tasks.jsonl`)
 - Alert system for heartbeat integration (`alerts/pending.json`)
 - Example tasks: `memory_capture`, `memory_consolidate`, `system_health`
 
-**📚 New Agent Research Docs:**
-- **`docs/session-context-overflow-fix.md`** - Complete operational guide for preventing and fixing context window overflow (research, analysis, layered defense strategy)
-- **`docs/agent-system-research.md`** - Comprehensive research report on memory systems, tiered memory, consolidation, proactive behavior, self-improvement (4500+ words, 31 citations)
+```bash
+python3 ~/.openclaw/workspace/scripts/taskrunner/runner.py memory_capture
+```
 
 ---
 
-## What's New (Feb 2026)
+## Agents
 
-**🚀 New Config Examples:**
-- **`pro-optimization.json5`** - Production-tuned power user settings (the "dial it to 11" config)
-- **`feature-unlocks.json5`** - Enable the "60% to 100%" features that ship disabled by default
-- **`memory-lancedb-setup.json5`** - LanceDB-backed long-term memory with auto-capture/recall
-- **`web-search-perplexity.json5`** - Switch from Brave to Perplexity (no rate limits)
+Drop-in persona prompts for `sessions_spawn` in `agents/`:
 
-**📚 New Docs:**
-- **`diagnosis-protocol.md`** - Check tools before recommending workarounds
-- **`context-overflow-prevention.md`** - Rules for spawning sub-agents under heavy load
+- `deep-researcher.md` — Multi-source research with citation
+- `architect.md` — System design and technical architecture
+- `security-auditor.md` — Security review and hardening
+- `content-writer.md` — Content drafting with voice/tone consistency
+- `ux-designer.md` — UX review and design recommendations
+- `market-researcher.md` — Market analysis and competitive intelligence
+- `project-planner.md` — Project breakdown and timeline estimation
+- `devils-advocate.md` — Structured counterarguments
 
-**🛠️ New Scripts:**
-- **`post-update-macos-arm64.sh`** - Reinstall native dependencies after `npm update`
+---
 
-**📊 Updated with Real Production Values:**
-- **Compaction & Pruning** - Updated with actual running config: `reserveTokensFloor: 20000`, `softThresholdTokens: 8000`
-- **Context Overflow Prevention** - Balanced production settings (not aggressive test config)
-- **Model Setup** - Current production model stack: Opus primary, Sonnet + GPT-5.2 fallbacks, Kimi for subagents
-- **Memory Recall** - Increased to 6 results per context (0.4% of window, better continuity)
-- **Cron Concurrency** - Increased to 5 (morning window has overlapping jobs)
-- **Subagent Thinking** - Changed to "high" (subagents do real work)
+## Repo Layout
 
-**Why These Matter:**
-OpenClaw ships conservative by default - it prioritizes "just works" over "maximum power." The new configs represent stable, production-tested optimizations that power users want but newcomers don't need to think about. Not experimental. Not bleeding edge. Just the settings that work when you know what you're doing.
-
-## Who this is for
-
-You'll like this repo if you:
-
-- run OpenClaw daily and want your setup to be **more stable under heavy tool usage**
-- are tired of "self-improvement" prompts that don't stick
-- want a practical starting point for a *real* workspace (templates + scripts), not a blank folder
-
-## Safety / privacy (read before copying)
-
-These files are meant to be copied into your workspace, which means you should treat them like production config:
-
-- **Never commit secrets** (API keys, tokens, cookie DBs)
-- Skim any file before you copy it; some templates contain placeholder personal details
-- If you fork this repo: keep it clean (no private data, no logs)
-
-## Quickstart (recommended)
-
-Pick only what you want. Most people start with **templates + memory engine** or **templates + task runner**.
-
-```bash
-# 1) Clone
-git clone https://github.com/unisone/openclaw-config.git
-cd openclaw-config
-
-# 2) Copy templates into your workspace (edit them after)
-# Replace ~/clawd with your OpenClaw workspace path.
-rsync -av templates/ ~/clawd/
-
-# 3) Option A: Copy the memory engine (shell-based)
-mkdir -p ~/clawd/scripts/
-rsync -av scripts/memory-engine/ ~/clawd/scripts/memory-engine/
-chmod +x ~/clawd/scripts/memory-engine/*.sh
-
-# 3) Option B: Copy the task runner (Python-based, recommended)
-rsync -av scripts/taskrunner/ ~/clawd/scripts/taskrunner/
-
-# 4) Run an initial capture
-# Memory engine:
-cd ~/clawd
-bash scripts/memory-engine/capture.sh
-
-# Task runner:
-python3 ~/clawd/scripts/taskrunner/runner.py memory_capture
-
-# 5) Try recall (memory engine only)
-bash scripts/memory-engine/recall.sh "context overflow"
 ```
-
-### Add the nightly job
-
-Run nightly learning (capture → decay → self-review → insights):
-
-- Option A: add a cron job in OpenClaw that runs `bash scripts/memory-engine/learn.sh`
-- Option B: run it manually at first to confirm it matches your workflow
-
-## Gateway config snippets
-
-Config examples live in `config/*.json5`.
-
-Typical workflow:
-
-1. Open your OpenClaw config file (`~/.openclaw/openclaw.json` on most installs)
-2. Copy the snippet you need
-3. Merge it into your config (don't blindly replace)
-
-Start here:
-
-- `config/compaction-and-pruning.json5` — highest impact stability settings
-- `config/context-overflow-prevention.json5` — defensive settings for heavy tool use
-- `config/model-aliases-and-fallbacks.json5` — provider fallbacks
-- `config/memory-search.json5` — semantic search over memory files
-- `config/memory-lancedb-setup.json5` — LanceDB + OpenAI embeddings + auto-capture/recall
-- `config/web-search-perplexity.json5` — Perplexity search (no rate limits with paid key)
-- `config/discord-setup.json5` — practical Discord defaults
-
-### Power User Configs (NEW)
-
-**`pro-optimization.json5`** — The "dial it to 11" config. Every optimization that makes OpenClaw faster, smarter, and more capable without sacrificing stability. What changes:
-- Longer session idle time (12h vs 24h for Discord)
-- Faster auth recovery (2h billing backoff vs 24h)
-- Aggressive caching (15min search, 10min web fetch)
-- Subagent cleanup (60min archive)
-- Smart message handling (auto-remove 👀 reactions)
-- Low thinking by default
-
-**When to use:** You understand the config, you're running OpenClaw daily, you want maximum capability.
-
-**`feature-unlocks.json5`** — The "60% to 100%" config. Enables production-ready features that ship disabled to avoid overwhelming new users. What unlocks:
-- Session transcript search (memory search covers ALL past conversations)
-- Image/audio auto-analysis (no need to ask "what's in this image?")
-- Link auto-fetch (paste a link, agent reads it — up to 3 links, 15s timeout)
-- Typing indicator (shows when agent is thinking)
-- Heartbeat active hours (proactive checks during work hours)
-- Hot reload (auto-reload config changes without restart)
-
-**When to use:** You've read `AGENTS.md`, you have `HEARTBEAT.md` configured, you want the full power-user experience.
-
-**How to apply:**
-```bash
-# Read the configs, copy sections you want into ~/.openclaw/openclaw.json
-# Restart gateway after changes
-openclaw gateway restart
-```
-
-**Pro tip:** Apply `pro-optimization.json5` first, run for a few days, then add `feature-unlocks.json5`. Changing everything at once makes it hard to tell what broke if something goes wrong.
-
-## Repo layout
-
-```text
 openclaw-config/
-  agents/               # Multi-agent persona prompts
-  config/               # JSON5 snippets you can merge into your gateway config
-  content-pipeline/     # Optional: cron-driven content workflow
-  docs/                 # Deep operational guides
-    ├── session-context-overflow-fix.md    # Prevent/fix context overflow
-    ├── agent-system-research.md           # Memory systems research report
-    └── skill-routing-improvements.md      # Skill routing audit + improvements
-  scripts/
-    ├── memory-engine/  # Shell-based capture/recall/decay/learn + self-review
-    └── taskrunner/     # Python task automation with retry/locking/logging
-  skills/               # Workspace-level SKILL.md routing overrides
-  templates/            # Workspace bootstrap files (AGENTS.md, SOUL.md, STATE.md, etc.)
-    └── artifacts/      # Structured output directory convention
-  workflows/            # Optional Lobster workflows
+├── agents/               # Multi-agent persona prompts
+├── config/               # Gateway config snippets (JSON5)
+├── content-pipeline/     # Optional: cron-driven content workflow
+├── docs/
+│   ├── agent-system-research.md           # Memory systems research (4500+ words)
+│   ├── session-context-overflow-fix.md    # Context overflow prevention
+│   ├── skill-routing-improvements.md      # Skill routing audit + improvements
+│   └── content-strategy/                  # Content framework + specs
+├── scripts/
+│   ├── memory-engine/    # Shell-based capture/recall/decay/learn
+│   └── taskrunner/       # Python task automation
+├── skills/               # Workspace-level SKILL.md routing overrides
+├── templates/            # Workspace bootstrap files
+│   └── artifacts/        # Structured output directory convention
+└── workflows/            # Optional Lobster workflows
 ```
+
+---
+
+## Safety & Privacy
+
+These files are meant to be copied into your workspace. Treat them like production config:
+
+- **Never commit secrets** — API keys, tokens, cookie databases
+- **Review before copying** — some templates contain placeholder values
+- **Fork responsibly** — no personal data, no logs
+
+See [SECURITY.md](./SECURITY.md) for reporting vulnerabilities.
+
+---
 
 ## Contributing
 
-PRs welcome, but keep it strict:
+PRs welcome. Requirements:
 
-- **Must be tested** in a real OpenClaw workspace
-- **No personal data** (keys, usernames, emails, logs)
-- Explain *why* a setting/script exists, not just what it does
+- Must be tested in a real OpenClaw workspace
+- No personal data (keys, usernames, emails, logs)
+- Explain *why* a setting exists, not just what it does
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
+---
+
 ## License
 
-MIT (see [LICENSE](./LICENSE))
+[MIT](./LICENSE)

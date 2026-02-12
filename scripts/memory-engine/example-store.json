@@ -1,38 +1,38 @@
 {
   "memories": [
     {
-      "category": "people",
-      "content": "GitHub: unisone...",
-      "score": 0.9141249999999999,
-      "keywords": null
-    },
-    {
-      "category": "people",
-      "content": "Twitter: @yourhandle...",
-      "score": 0.9141249999999999,
-      "keywords": null
-    },
-    {
-      "category": "people",
-      "content": "Email: user@example.com...",
-      "score": 0.9141249999999999,
-      "keywords": null
-    },
-    {
       "category": "preference",
-      "content": "Has GitHub Sponsors set up, wants to monetize prom...",
-      "score": 1.3612080000000002,
+      "content": "Prefers direct communication, no filler...",
+      "score": 0.92,
       "keywords": null
     },
     {
       "category": "fact",
-      "content": "Added .github/FUNDING.yml...",
-      "score": 0.9141249999999999,
+      "content": "Project uses Next.js 15 + Supabase...",
+      "score": 0.85,
+      "keywords": null
+    },
+    {
+      "category": "decision",
+      "content": "Switched from Brave to Perplexity for web search...",
+      "score": 1.36,
+      "keywords": null
+    },
+    {
+      "category": "project",
+      "content": "Landing page deployed at example.com...",
+      "score": 0.91,
+      "keywords": null
+    },
+    {
+      "category": "correction",
+      "content": "Don't use gog for IMAP accounts — use himalaya...",
+      "score": 0.91,
       "keywords": null
     }
   ],
   "meta": {
-    "note": "Example store - 252 memories in production",
+    "note": "Example store — anonymized. Real stores have 200+ memories.",
     "categories": [
       "fact",
       "correction",
