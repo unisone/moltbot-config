@@ -12,8 +12,8 @@ const os = require('os');
 // OpenClaw config path (Jan 2026+). Keep legacy fallbacks for older installs.
 const CONFIG_PATHS = [
   path.join(os.homedir(), '.openclaw', 'openclaw.json'),
-  path.join(os.homedir(), '.clawdbot', 'clawdbot.json'),
-  path.join(os.homedir(), '.clawdbot', 'moltbot.json'),
+  path.join(os.homedir(), '.openclaw', 'openclaw.json'),
+  path.join(os.homedir(), '.openclaw', 'openclaw.json'),
 ];
 
 function resolveConfigPath() {
@@ -67,7 +67,7 @@ function installRestrictions(config) {
       approvalServer: {
         enabled: true,
         port: 18790,
-        discordChannelId: "1466528903815499997", // #dev channel
+        discordChannelId: "YOUR_DISCORD_CHANNEL_ID", // #dev channel
         tokenTtl: 300, // 5 minutes
         maxRetries: 3
       }

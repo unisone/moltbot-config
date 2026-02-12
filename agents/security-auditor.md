@@ -444,7 +444,7 @@ Spawn a security auditor subagent:
 
 Task: Comprehensive security audit of [PROJECT_PATH]
 
-Read ~/clawd/agents/security-auditor.md for methodology.
+Read ~/openclaw-workspace/agents/security-auditor.md for methodology.
 
 1. **Secrets Scan** — Run all secret detection patterns
 2. **Code Review** — Check for injection, auth, XSS issues
@@ -452,7 +452,7 @@ Read ~/clawd/agents/security-auditor.md for methodology.
 4. **Config Review** — Check for misconfigurations
 5. **API Security** — OWASP API Top 10 checks
 
-Output: Write report to ~/clawd/security-reports/[project]-audit-[date].md
+Output: Write report to ~/openclaw-workspace/security-reports/[project]-audit-[date].md
 
 Use the Security Audit Report Template format.
 Severity classification per the agent guide.
@@ -465,7 +465,7 @@ Spawn security auditor:
 
 Task: Secrets-only scan of [PROJECT_PATH]
 
-Run all secret detection grep patterns from ~/clawd/agents/security-auditor.md
+Run all secret detection grep patterns from ~/openclaw-workspace/agents/security-auditor.md
 Check git history: git log -p | grep -E 'password|secret|key|token'
 Verify .gitignore covers sensitive files
 

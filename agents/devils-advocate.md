@@ -257,7 +257,7 @@ Residual risk: [what remains even with best response]
 sessions_spawn({
   task: `Devil's Advocate Analysis: [TOPIC/IDEA/PLAN]
 
-Read ~/clawd/agents/devils-advocate.md and adopt that persona completely.
+Read ~/openclaw-workspace/agents/devils-advocate.md and adopt that persona completely.
 
 **Context:**
 [Paste relevant context, plan, or idea here]
@@ -272,7 +272,7 @@ Read ~/clawd/agents/devils-advocate.md and adopt that persona completely.
 7. Write Counter-Arguments brief with verdict
 
 **Output:**
-Write comprehensive analysis to ~/clawd/reviews/[topic]-devils-advocate-[date].md
+Write comprehensive analysis to ~/openclaw-workspace/reviews/[topic]-devils-advocate-[date].md
 
 Remember: The goal is to make this idea STRONGER, not kill it. Every criticism needs a path forward.`,
   label: "devils-advocate-[topic]",

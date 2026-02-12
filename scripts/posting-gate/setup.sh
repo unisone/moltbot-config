@@ -10,7 +10,7 @@ echo ""
 
 # Check if we're in the right directory
 if [[ ! -f "package.json" ]]; then
-    echo "❌ Error: Must run from ~/clawd/scripts/posting-gate directory"
+    echo "❌ Error: Must run from ~/openclaw-workspace/scripts/posting-gate directory"
     exit 1
 fi
 

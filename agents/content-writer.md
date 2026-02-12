@@ -529,7 +529,7 @@ sessions_spawn({
 
 You are Sam Chen, senior content strategist.
 
-Read the agent guide at ~/clawd/agents/content-writer.md for full methodology.
+Read the agent guide at ~/openclaw-workspace/agents/content-writer.md for full methodology.
 
 **Content Type:** [blog post / docs / landing page / changelog / etc.]
 **Topic:** [TOPIC]
@@ -557,7 +557,7 @@ Read the agent guide at ~/clawd/agents/content-writer.md for full methodology.
 sessions_spawn({
   task: `Write Blog Post
 
-You are Sam Chen. Read ~/clawd/agents/content-writer.md.
+You are Sam Chen. Read ~/openclaw-workspace/agents/content-writer.md.
 
 **Title Idea:** [title or topic]
 **Audience:** [developer / marketer / founder / etc.]
@@ -572,7 +572,7 @@ You are Sam Chen. Read ~/clawd/agents/content-writer.md.
 
 Use PAS for the intro. Include at least 2 concrete examples.
 
-**Output:** ~/clawd/drafts/blog-[slug].md`,
+**Output:** ~/openclaw-workspace/drafts/blog-[slug].md`,
   label: "blog-[topic]",
   agentId: "main"
 })
@@ -583,7 +583,7 @@ Use PAS for the intro. Include at least 2 concrete examples.
 sessions_spawn({
   task: `Write Technical Documentation
 
-You are Sam Chen. Read ~/clawd/agents/content-writer.md.
+You are Sam Chen. Read ~/openclaw-workspace/agents/content-writer.md.
 
 **Feature/API:** [What to document]
 **Audience:** [Developer experience level]
@@ -597,7 +597,7 @@ You are Sam Chen. Read ~/clawd/agents/content-writer.md.
 
 **Style:** Stripe docs—precise, scannable, copy-paste ready
 
-**Output:** ~/clawd/docs/[feature-name].md`,
+**Output:** ~/openclaw-workspace/docs/[feature-name].md`,
   label: "docs-[feature]",
   agentId: "main"
 })
@@ -608,7 +608,7 @@ You are Sam Chen. Read ~/clawd/agents/content-writer.md.
 sessions_spawn({
   task: `Write Landing Page Copy
 
-You are Sam Chen. Read ~/clawd/agents/content-writer.md.
+You are Sam Chen. Read ~/openclaw-workspace/agents/content-writer.md.
 
 **Product:** [What it is]
 **Audience:** [Who it's for]
@@ -624,7 +624,7 @@ You are Sam Chen. Read ~/clawd/agents/content-writer.md.
 
 **Tone:** [Stripe / Linear / Vercel / custom]
 
-**Output:** ~/clawd/drafts/landing-[product].md`,
+**Output:** ~/openclaw-workspace/drafts/landing-[product].md`,
   label: "landing-[product]",
   agentId: "main"
 })
@@ -635,7 +635,7 @@ You are Sam Chen. Read ~/clawd/agents/content-writer.md.
 sessions_spawn({
   task: `Write Changelog Entry
 
-You are Sam Chen. Read ~/clawd/agents/content-writer.md.
+You are Sam Chen. Read ~/openclaw-workspace/agents/content-writer.md.
 
 **What Changed:**
 - [Change 1]
@@ -650,7 +650,7 @@ Write in Linear/Stripe changelog style:
 - Be specific about fixes
 - Skip the corporate excitement
 
-**Output:** Append to ~/clawd/CHANGELOG.md`,
+**Output:** Append to ~/openclaw-workspace/CHANGELOG.md`,
   label: "changelog",
   agentId: "main"
 })
@@ -661,7 +661,7 @@ Write in Linear/Stripe changelog style:
 sessions_spawn({
   task: `Review and Edit Content
 
-You are Sam Chen. Read ~/clawd/agents/content-writer.md.
+You are Sam Chen. Read ~/openclaw-workspace/agents/content-writer.md.
 
 **File to Review:** [path]
 

@@ -13,8 +13,8 @@ const { spawn } = require('child_process');
 const APPROVAL_SERVER_URL = 'http://localhost:18790';
 const CONFIG_PATHS = [
   path.join(process.env.HOME, '.openclaw', 'openclaw.json'),
-  path.join(process.env.HOME, '.clawdbot', 'clawdbot.json'),
-  path.join(process.env.HOME, '.clawdbot', 'moltbot.json'),
+  path.join(process.env.HOME, '.openclaw', 'openclaw.json'),
+  path.join(process.env.HOME, '.openclaw', 'openclaw.json'),
 ];
 
 function resolveConfigPath() {
@@ -207,7 +207,7 @@ class SystemTester {
         platform: 'twitter',
         action: 'send',
         content: 'Test tweet for approval system',
-        target: '@clawdbot'
+        target: '@openclaw'
       };
       
       const approvalResponse = await axios.post(`${APPROVAL_SERVER_URL}/request-approval`, approvalData);

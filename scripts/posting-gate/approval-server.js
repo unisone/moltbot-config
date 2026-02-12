@@ -13,7 +13,7 @@ const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder
 
 const PORT = process.env.APPROVAL_PORT || 18790;
 const DISCORD_TOKEN = process.env.DISCORD_BOT_TOKEN; // Will read from OpenClaw config if not set
-const DEV_CHANNEL_ID = '1466528903815499997';
+const DEV_CHANNEL_ID = 'YOUR_DISCORD_CHANNEL_ID';
 const LOGS_DIR = path.join(__dirname, 'logs');
 const TOKENS_FILE = path.join(__dirname, 'approval-tokens.json');
 
@@ -121,8 +121,8 @@ class ApprovalServer {
   async getDiscordTokenFromConfig() {
     const candidates = [
       path.join(process.env.HOME, '.openclaw', 'openclaw.json'),
-      path.join(process.env.HOME, '.clawdbot', 'clawdbot.json'),
-      path.join(process.env.HOME, '.clawdbot', 'moltbot.json'),
+      path.join(process.env.HOME, '.openclaw', 'openclaw.json'),
+      path.join(process.env.HOME, '.openclaw', 'openclaw.json'),
     ];
 
     for (const configPath of candidates) {

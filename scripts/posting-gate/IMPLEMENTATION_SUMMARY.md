@@ -37,10 +37,10 @@
 - ✅ **Fail-secure** design (default deny)
 - ✅ **Read access preserved** for research
 
-## Installation for Alex
+## Installation
 
 ```bash
-cd ~/clawd/scripts/posting-gate
+cd ~/openclaw-workspace/scripts/posting-gate
 ./setup.sh
 ```
 
@@ -54,13 +54,13 @@ The setup script will:
 ## Workflow After Installation
 
 1. Agent attempts to post → Gets blocked → Drafts to Discord with approval buttons
-2. Alex sees draft in #dev channel with ✅ and ❌ buttons
-3. Alex clicks ✅ to approve → One-time token issued → Agent retries → Post succeeds
+2. Owner sees draft in #dev channel with ✅ and ❌ buttons
+3. Owner clicks ✅ to approve → One-time token issued → Agent retries → Post succeeds
 4. All approvals logged for audit trail
 
 ## Files Location
 
-All implementation files saved to: `~/clawd/scripts/posting-gate/`
+All implementation files saved to: `~/openclaw-workspace/scripts/posting-gate/`
 
 ## Confidence Level
 
@@ -69,8 +69,8 @@ All implementation files saved to: `~/clawd/scripts/posting-gate/`
 ## Discord Thread
 
 Research findings and implementation details posted to: 
-**🔒 Technical Safeguards — X Posting Approval Gate** thread in #dev channel (ID: 1466865888828461245)
+**🔒 Technical Safeguards — X Posting Approval Gate** thread in #dev channel (ID: YOUR_DISCORD_THREAD_ID)
 
 ---
 
-**✅ Task complete. Ready for Alex to review and deploy.**
+**✅ Task complete. Ready to review and deploy.**

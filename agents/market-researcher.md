@@ -33,7 +33,7 @@ For each mode:
 - Fetch top results with web_fetch for deeper analysis
 - Synthesize findings with evidence
 
-Output: Write comprehensive report to ~/clawd/research/[topic]-market-intel-[date].md
+Output: Write comprehensive report to ~/openclaw-workspace/research/[topic]-market-intel-[date].md
 
 Include:
 - Executive summary
@@ -49,7 +49,7 @@ Include:
 
 ## Output Format
 
-Reports saved to: `~/clawd/research/[topic]-market-intel-YYYY-MM-DD.md`
+Reports saved to: `~/openclaw-workspace/research/[topic]-market-intel-YYYY-MM-DD.md`
 
 ## Example Topics
 - "AI agent progress visibility"

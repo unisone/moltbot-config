@@ -497,12 +497,12 @@ Username. (2024, February 5). Post title [Online forum comment]. Reddit. https:/
 ### Supporting Skills
 - **perplexity** — AI-powered search with citations (when available)
   ```bash
-  node ~/clawd/skills/perplexity/scripts/search.mjs "research query"
+  node ~/openclaw-workspace/skills/perplexity/scripts/search.mjs "research query"
   ```
   
 - **deepwiki** — Repository documentation research
   ```bash
-  node ~/clawd/skills/deepwiki/scripts/deepwiki.js ask owner/repo "question"
+  node ~/openclaw-workspace/skills/deepwiki/scripts/deepwiki.js ask owner/repo "question"
   ```
 
 ### Search Optimization
@@ -539,7 +539,7 @@ sessions_spawn({
 
 You are Dr. Athena, a PhD-level research specialist.
 
-Read the agent guide at ~/clawd/agents/deep-researcher.md for full methodology.
+Read the agent guide at ~/openclaw-workspace/agents/deep-researcher.md for full methodology.
 
 **Research Question:** [SPECIFIC QUESTION]
 
@@ -550,7 +550,7 @@ Read the agent guide at ~/clawd/agents/deep-researcher.md for full methodology.
 4. Include confidence levels for all findings
 5. Document methodology and limitations
 
-**Output:** Write to ~/clawd/research/[topic]-deep-research-[YYYY-MM-DD].md
+**Output:** Write to ~/openclaw-workspace/research/[topic]-deep-research-[YYYY-MM-DD].md
 
 **Quality Standards:**
 - Minimum 10 sources, at least 5 Tier 1-2
@@ -569,7 +569,7 @@ sessions_spawn({
 
 You are Dr. Athena conducting a rapid preliminary review.
 
-Read ~/clawd/agents/deep-researcher.md — use abbreviated methodology.
+Read ~/openclaw-workspace/agents/deep-researcher.md — use abbreviated methodology.
 
 **Question:** [QUESTION]
 **Time constraint:** Preliminary findings only
@@ -580,7 +580,7 @@ Read ~/clawd/agents/deep-researcher.md — use abbreviated methodology.
 3. Quick SIFT evaluation (skip full CRAAP)
 4. Synthesis Report format (abbreviated)
 
-**Output:** ~/clawd/research/[topic]-rapid-review-[YYYY-MM-DD].md
+**Output:** ~/openclaw-workspace/research/[topic]-rapid-review-[YYYY-MM-DD].md
 
 Flag what would need deeper investigation.`,
   label: "rapid-research-[topic]",
@@ -595,7 +595,7 @@ sessions_spawn({
 
 You are Dr. Athena conducting comparative analysis.
 
-Read ~/clawd/agents/deep-researcher.md for methodology.
+Read ~/openclaw-workspace/agents/deep-researcher.md for methodology.
 
 **Research Questions:**
 1. What are the key differences between [A] and [B]?
@@ -607,7 +607,7 @@ Read ~/clawd/agents/deep-researcher.md for methodology.
 - Create comparison matrix
 - Synthesize findings with recommendations
 
-**Output:** ~/clawd/research/[topicA]-vs-[topicB]-comparison-[YYYY-MM-DD].md`,
+**Output:** ~/openclaw-workspace/research/[topicA]-vs-[topicB]-comparison-[YYYY-MM-DD].md`,
   label: "comparative-research",
   agentId: "main"
 })

@@ -1,5 +1,5 @@
 {
-  "name": "clawdbot-posting-gate",
+  "name": "openclaw-posting-gate",
   "version": "1.0.0",
   "description": "Technical safeguard system preventing unauthorized AI agent social media posting",
   "main": "approval-server.js",

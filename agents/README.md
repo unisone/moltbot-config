@@ -32,12 +32,12 @@ Each agent config includes:
 sessions_spawn({
   task: `Security Audit: [PROJECT]
   
-  Read ~/clawd/agents/security-auditor.md for methodology.
+  Read ~/openclaw-workspace/agents/security-auditor.md for methodology.
   
   Run full security audit on [path/to/project].
   Focus on: secrets, auth, injection, dependencies.
   
-  Output: ~/clawd/research/[project]-security-audit.md`,
+  Output: ~/openclaw-workspace/research/[project]-security-audit.md`,
   label: "security-audit",
   agentId: "main"
 })

@@ -322,7 +322,7 @@ linear issue create --title "Login Feature" --team ENG --estimate 5
 sessions_spawn({
   task: `Project Planning: [YOUR PROJECT DESCRIPTION]
 
-Read ~/clawd/agents/project-planner.md for methodology.
+Read ~/openclaw-workspace/agents/project-planner.md for methodology.
 
 **Input:** [Paste spec, PRD, or describe the project]
 
@@ -335,7 +335,7 @@ Read ~/clawd/agents/project-planner.md for methodology.
 6. **Sprint Plan** — If multi-sprint, rough sprint allocation
 7. **Timeline Estimate** — Range with confidence level
 
-**Output Format:** Write plan to ~/clawd/projects/[project-name]-plan.md
+**Output Format:** Write plan to ~/openclaw-workspace/projects/[project-name]-plan.md
 
 **Optional Integrations:**
 - Create GitHub issues: Use gh CLI from github skill

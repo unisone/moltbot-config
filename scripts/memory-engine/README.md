@@ -23,11 +23,11 @@
 
 ```bash
 # 1. Create structure
-mkdir -p ~/clawd/memory/archive
-touch ~/clawd/MEMORY.md
+mkdir -p ~/openclaw-workspace/memory/archive
+touch ~/openclaw-workspace/MEMORY.md
 
 # 2. Copy scripts
-cp -r scripts/memory-engine ~/clawd/scripts/
+cp -r scripts/memory-engine ~/openclaw-workspace/scripts/
 
 # 3. Initialize store
 ./capture.sh

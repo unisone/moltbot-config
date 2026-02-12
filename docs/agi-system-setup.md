@@ -16,7 +16,7 @@ The AGI system provides:
 ### 1. Create Scripts Directory
 
 ```bash
-mkdir -p ~/clawd/scripts/agi
+mkdir -p ~/openclaw-workspace/scripts/agi
 ```
 
 ### 2. Copy AGI Scripts
@@ -34,11 +34,11 @@ See the scripts in the main workspace:
 ### 3. Create Memory Infrastructure
 
 ```bash
-mkdir -p ~/clawd/.learnings
-touch ~/clawd/.learnings/ERRORS.md
-touch ~/clawd/.learnings/LEARNINGS.md
-touch ~/clawd/memory/self-review.md
-touch ~/clawd/THINKING.md
+mkdir -p ~/openclaw-workspace/.learnings
+touch ~/openclaw-workspace/.learnings/ERRORS.md
+touch ~/openclaw-workspace/.learnings/LEARNINGS.md
+touch ~/openclaw-workspace/memory/self-review.md
+touch ~/openclaw-workspace/THINKING.md
 ```
 
 ### 4. Add AGENTS.md Protocols
@@ -81,8 +81,8 @@ Add to your AGENTS.md:
 **Nightly Learning (3AM):**
 Update your memory-engine-nightly cron to also run:
 ```bash
-bash ~/clawd/scripts/agi/learn.sh
-bash ~/clawd/scripts/agi/extract-corrections.sh
+bash ~/openclaw-workspace/scripts/agi/learn.sh
+bash ~/openclaw-workspace/scripts/agi/extract-corrections.sh
 ```
 
 ## Skill Routing Matrix

@@ -10,7 +10,7 @@ const crypto = require('crypto');
 
 const APPROVAL_SERVER_URL = 'http://localhost:18790';
 const RESTRICTED_PLATFORMS = ['twitter', 'x', 'linkedin', 'facebook', 'instagram', 'tiktok'];
-const DISCORD_DEV_CHANNEL = '1466528903815499997';
+const DISCORD_DEV_CHANNEL = 'YOUR_DISCORD_CHANNEL_ID';
 
 class ApprovedMessageTool {
   constructor() {

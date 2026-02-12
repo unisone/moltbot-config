@@ -2,13 +2,13 @@
 
 **Status:** Active (replaces CONTENT-PIPELINE.md)  
 **Last Updated:** 2025-01-30  
-**Database ID:** `40e45f2b-e0fc-4e43-948d-4fb38dee9a74`
+**Database ID:** `YOUR_NOTION_DATABASE_ID`
 
 ## Overview
 
 The Content Pipeline V2 is a fully automated 5-stage content creation, approval, and optimization system. It consolidates the previous x-trend-reactor, x-morning-post, and x-evening-post workflows into a single, intelligent scanning system with continuous learning capabilities.
 
-**Core Principle:** ALL posts require Alex's explicit approval before publishing to any platform.
+**Core Principle:** ALL posts require the owner's explicit approval before publishing to any platform.
 
 ---
 
@@ -19,7 +19,7 @@ The Content Pipeline V2 is a fully automated 5-stage content creation, approval,
 ```
 1. RESEARCH   → Find 5-10 top-performing posts on the same topic. Study hooks, format, structure, what worked.
 2. DRAFT      → Write draft informed by research. Swiffer test. Visual concept.
-3. NOTION     → Create page in Content Calendar DB (40e45f2b-e0fc-4e43-948d-4fb38dee9a74).
+3. NOTION     → Create page in Content Calendar DB (YOUR_NOTION_DATABASE_ID).
                  Tag: Status=Draft, Platform, Pillar, Hook Style, Format, Length, Topic.
                  Notion is the SINGLE SOURCE OF TRUTH. Not local markdown files.
 4. REVIEW     → Post Notion link to Discord #content. Show exact draft text. Wait for explicit approval.
@@ -107,7 +107,7 @@ Each discovered topic gets scored based on 4 factors:
 ### Draft Creation
 
 1. **Generate Content:**
-   - Create engaging post matching Alex's voice
+   - Create engaging post matching the owner's voice
    - Include relevant hashtags and mentions
    - Optimize for platform (X vs LinkedIn formatting)
 
@@ -118,7 +118,7 @@ Each discovered topic gets scored based on 4 factors:
    - Add research links and context
 
 3. **Discord Notification:**
-   - Send draft to #content channel (ID: `1466528839575535831`)
+   - Send draft to #content channel (ID: `YOUR_DISCORD_CHANNEL_ID`)
    - Include Notion row link
    - Store Discord message ID in Notion row
 
@@ -126,17 +126,17 @@ Each discovered topic gets scored based on 4 factors:
 
 ## STAGE 3: APPROVAL + POST
 
-**Critical Rule:** ZERO posts without Alex's approval
+**Critical Rule:** ZERO posts without the owner's approval
 
 ### Approval Methods
 
 **Method A - Discord Reply:**
-- Alex replies in #content with approval keywords: "post it", "go", "approved"
+- The owner replies in #content with approval keywords: "post it", "go", "approved"
 - System posts immediately upon detection
 - Update Notion status to `Published`
 
 **Method B - Notion Status:**
-- Alex manually changes Notion status to `Approved`
+- The owner manually changes Notion status to `Approved`
 - Next Smart Scan cycle detects and posts
 - Update status to `Published`
 
@@ -152,7 +152,7 @@ Each discovered topic gets scored based on 4 factors:
 
 3. **Manual Paste** (emergency)
    - Provide copy text to Discord
-   - Alex pastes manually
+   - The owner pastes manually
 
 ### Post-Publishing Actions
 
@@ -236,7 +236,7 @@ Each discovered topic gets scored based on 4 factors:
 
 ## NOTION DATABASE SCHEMA
 
-**Database ID:** `40e45f2b-e0fc-4e43-948d-4fb38dee9a74`
+**Database ID:** `YOUR_NOTION_DATABASE_ID`
 
 ### Core Properties
 
@@ -284,7 +284,7 @@ Each discovered topic gets scored based on 4 factors:
 ## KEY FILES REFERENCE
 
 ### Strategy & Voice
-- `memory/x-content-strategy.md` — Alex's voice, tone, posting rules, content pillars
+- `memory/x-content-strategy.md` — the owner's voice, tone, posting rules, content pillars
 
 ### Data & Logs  
 - `memory/trend-log.md` — Historical topic scores and trends
@@ -299,8 +299,8 @@ Each discovered topic gets scored based on 4 factors:
 ## APPROVAL RULES (NON-NEGOTIABLE)
 
 ### Golden Rules
-1. **NEVER post to X without Alex's approval**
-2. **NEVER post to LinkedIn without Alex's approval**  
+1. **NEVER post to X without the owner's approval**
+2. **NEVER post to LinkedIn without the owner's approval**  
 3. **ALL drafts go to Discord #content first**
 4. **If technical posting fails, provide copy text for manual paste**
 
@@ -353,7 +353,7 @@ Each discovered topic gets scored based on 4 factors:
 - **Engagement Rate:** Target >5% average
 - **Pillar Balance:** Equal distribution across 4 pillars
 - **Trend Capture:** Breaking stories within 2 hours
-- **Voice Consistency:** Matches Alex's style guidelines
+- **Voice Consistency:** Matches the owner's style guidelines
 
 ---
 

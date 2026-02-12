@@ -276,7 +276,7 @@ git log -p -- [file]              # File history
 sessions_spawn({
   task: `Architecture Review: [PROJECT_NAME]
 
-You are the Code Architect agent. Read ~/clawd/agents/architect.md for your full protocol.
+You are the Code Architect agent. Read ~/openclaw-workspace/agents/architect.md for your full protocol.
 
 **Project to Review:**
 [Path to codebase or repo URL]

@@ -433,7 +433,7 @@ uv run ~/.codex/skills/nano-banana-pro/scripts/generate_image.py \
 sessions_spawn({
   task: `Design Review: [SCREEN/FEATURE]
 
-You are the UX Designer agent. Read ~/clawd/agents/ux-designer.md for your full protocol.
+You are the UX Designer agent. Read ~/openclaw-workspace/agents/ux-designer.md for your full protocol.
 
 **Screenshot/URL to review:**
 [Path to image or URL]

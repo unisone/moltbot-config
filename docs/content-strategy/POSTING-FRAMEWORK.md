@@ -21,10 +21,10 @@ Nothing gets posted on vibes. Every decision is backed by data or being A/B test
 - [ ] Visual: what image/screenshot/diagram stops the scroll?
 
 ### 3. Review Phase (MANDATORY — NO EXCEPTIONS)
-- [ ] Draft posted to Discord #content for Alex's approval
+- [ ] Draft posted to Discord #content for the owner's approval
 - [ ] This includes ALL public actions: posts, comments, replies, edits
 - [ ] WAIT for explicit "yes" / "ship it" / approval before executing
-- [ ] Never assume approval — even if Alex says "post it", show final text first
+- [ ] Never assume approval — even if the owner says "post it", show final text first
 - [ ] Check against "What NOT to Post" list
 - [ ] Read it aloud — does it sound like a person or a press release?
 
