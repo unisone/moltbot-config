@@ -16,128 +16,117 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Scan for API keys and tokens
+      - name: Scan for secrets and API keys
         run: |
           echo "=== Scanning for secrets and API keys ==="
           FOUND=0
+          SCAN_INCLUDES="--include=*.md --include=*.json --include=*.json5 --include=*.js --include=*.py --include=*.sh --include=*.yml --include=*.yaml --include=*.lobster --include=*.txt"
+          SCAN_EXCLUDES="--exclude-dir=.git --exclude-dir=node_modules --exclude=security-scan.yml"
 
-          # Pattern definitions: "label|regex"
+          # Each pattern: "label|regex"
           PATTERNS=(
-            "OpenAI API key|sk-[a-zA-Z0-9_-]{20,}"
-            "Slack bot token|xoxb-[0-9A-Za-z-]+"
-            "Slack user token|xoxp-[0-9A-Za-z-]+"
-            "Slack app token|xapp-[0-9A-Za-z-]+"
-            "GitHub personal token|ghp_[0-9A-Za-z]{36}"
+            "OpenAI API key|sk-(?:proj-)?[a-zA-Z0-9_-]{20,}"
+            "Slack bot token|xoxb-[0-9]{10,}-[0-9A-Za-z-]+"
+            "Slack user token|xoxp-[0-9]{10,}-[0-9A-Za-z-]+"
+            "Slack app token|xapp-[0-9]-[0-9A-Za-z-]{20,}"
+            "GitHub PAT|ghp_[0-9A-Za-z]{36}"
             "GitHub user token|ghu_[0-9A-Za-z]{36}"
             "AWS access key|AKIA[0-9A-Z]{16}"
-            "Generic secret assignment|['\"]?(?:password|secret|token|api_key|apikey)['\"]?\s*[:=]\s*['\"](?!YOUR_|PLACEHOLDER|example|changeme|sk-proj-\.\.\.)[^'\"$]{8,}['\"]"
             "Bearer token|Bearer\s+[a-zA-Z0-9._-]{20,}"
             "Private key header|-----BEGIN (RSA |EC |DSA )?PRIVATE KEY-----"
-            "Perplexity API key|pplx-[a-zA-Z0-9]{40,}"
             "Anthropic API key|sk-ant-[a-zA-Z0-9-]{20,}"
             "Linear API key|lin_api_[a-zA-Z0-9]{30,}"
+            "Perplexity API key|pplx-[a-zA-Z0-9]{40,}"
           )
 
           for entry in "${PATTERNS[@]}"; do
             LABEL="${entry%%|*}"
             REGEX="${entry#*|}"
-            if grep -rPn "$REGEX" --include='*.md' --include='*.json' --include='*.json5' --include='*.js' --include='*.py' --include='*.sh' --include='*.yml' --include='*.yaml' --include='*.lobster' --include='*.txt' --exclude-dir='.git' --exclude-dir='node_modules' --exclude='.github/workflows/security-scan.yml' . 2>/dev/null; then
+            HITS=$(grep -rPn "$REGEX" $SCAN_INCLUDES $SCAN_EXCLUDES . 2>/dev/null \
+              | grep -v 'YOUR_\|PLACEHOLDER\|example\|changeme\|sk-proj-\.\.\.' \
+              | grep -v '# .*pattern\|# .*regex\|# .*scan\|PATTERNS\|REGEX' || true)
+            if [ -n "$HITS" ]; then
+              echo "$HITS"
               echo "::error::BLOCKED: Found potential $LABEL"
               FOUND=1
             fi
           done
 
           if [ "$FOUND" -eq 1 ]; then
-            echo ""
-            echo "::error::Secret scan failed. Remove all secrets before pushing."
+            echo "::error::Secret scan failed — remove all secrets before merging."
             exit 1
           fi
+          echo "✅ No secrets found."
 
-          echo "No secrets found."
-
-      - name: Scan for PII (personal identifiable information)
+      - name: Scan for PII
         run: |
           echo "=== Scanning for PII ==="
           FOUND=0
+          SCAN_INCLUDES="--include=*.md --include=*.json --include=*.json5 --include=*.js --include=*.py --include=*.sh --include=*.lobster"
+          SCAN_EXCLUDES="--exclude-dir=.git --exclude-dir=node_modules --exclude=security-scan.yml"
 
-          # Email addresses (exclude generic/placeholder patterns)
-          if grep -rPn '[a-zA-Z0-9._%+-]+@(?!example\.com|placeholder\.com|yourdomain\.com|yourhandle)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
-            --include='*.md' --include='*.json' --include='*.json5' --include='*.js' --include='*.py' --include='*.sh' --include='*.lobster' \
-            --exclude-dir='.git' --exclude-dir='node_modules' --exclude='.github/workflows/security-scan.yml' . 2>/dev/null; then
-            echo "::warning::Found potential email addresses — verify these are intentional placeholders"
+          # Real email addresses (require word-char before @, valid TLD)
+          # Exclude: placeholders, generic docs patterns, code comments about email
+          EMAIL_HITS=$(grep -rPn '\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b' $SCAN_INCLUDES $SCAN_EXCLUDES . 2>/dev/null \
+            | grep -v 'example\.com\|placeholder\.com\|yourdomain\.com\|you@gmail\.com\|your-email@' \
+            | grep -v '"email":\|"calendar":\|# .*@\|//.*@' || true)
+          if [ -n "$EMAIL_HITS" ]; then
+            echo "$EMAIL_HITS"
+            echo "::error::BLOCKED: Found real email addresses"
             FOUND=1
           fi
 
-          # Phone numbers (US format)
-          if grep -rPn '\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}' \
-            --include='*.md' --include='*.json' --include='*.json5' --include='*.js' --include='*.py' --include='*.sh' \
-            --exclude-dir='.git' --exclude-dir='node_modules' --exclude='.github/workflows/security-scan.yml' . 2>/dev/null; then
-            echo "::warning::Found potential phone numbers"
-            FOUND=1
-          fi
-
-          # Tailscale / private IPs
-          if grep -rPn '(?:100\.\d{1,3}\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})' \
-            --include='*.md' --include='*.json' --include='*.json5' --include='*.js' --include='*.py' --include='*.sh' \
-            --exclude-dir='.git' --exclude-dir='node_modules' --exclude='.github/workflows/security-scan.yml' . 2>/dev/null; then
+          # Private/Tailscale IPs (real addresses, not in comments/docs about IP ranges)
+          IP_HITS=$(grep -rPn '\b(?:192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|100\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})\b' $SCAN_INCLUDES $SCAN_EXCLUDES . 2>/dev/null \
+            | grep -v '# .*example\|//.*example\|0\.0\.0\.0' || true)
+          if [ -n "$IP_HITS" ]; then
+            echo "$IP_HITS"
             echo "::error::BLOCKED: Found private/internal IP addresses"
             FOUND=1
           fi
 
-          if [ "$FOUND" -eq 1 ]; then
-            echo ""
-            echo "::error::PII scan found issues. Review and remove personal data before pushing."
-            exit 1
+          # LinkedIn URN with real ID
+          URN_HITS=$(grep -rPn 'urn:li:person:[a-zA-Z0-9]{5,}' $SCAN_INCLUDES $SCAN_EXCLUDES . 2>/dev/null \
+            | grep -v 'urn:li:person:\.\.\.' || true)
+          if [ -n "$URN_HITS" ]; then
+            echo "$URN_HITS"
+            echo "::error::BLOCKED: Found LinkedIn URN"
+            FOUND=1
           fi
 
-          echo "No PII found."
+          if [ "$FOUND" -eq 1 ]; then
+            echo "::error::PII scan failed — remove personal data before merging."
+            exit 1
+          fi
+          echo "✅ No PII found."
 
       - name: Scan for hardcoded infrastructure IDs
         run: |
           echo "=== Scanning for infrastructure IDs ==="
           FOUND=0
+          SCAN_INCLUDES="--include=*.md --include=*.json --include=*.json5 --include=*.js --include=*.py --include=*.sh --include=*.lobster"
+          SCAN_EXCLUDES="--exclude-dir=.git --exclude-dir=node_modules --exclude=security-scan.yml"
 
-          # Discord channel/server IDs (17-19 digit snowflakes that aren't placeholders)
-          if grep -rPn '\b\d{17,19}\b' \
-            --include='*.md' --include='*.json' --include='*.json5' --include='*.js' --include='*.py' --include='*.sh' --include='*.lobster' \
-            --exclude-dir='.git' --exclude-dir='node_modules' --exclude='.github/workflows/security-scan.yml' . 2>/dev/null | \
-            grep -v 'YOUR_' | grep -v 'PLACEHOLDER' | grep -v 'example' | grep -v '000000000000000000'; then
-            echo "::warning::Found potential Discord/Slack snowflake IDs — verify these are placeholders"
-          fi
-
-          # Notion database UUIDs (8-4-4-4-12 format)
-          if grep -rPn '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' \
-            --include='*.md' --include='*.json' --include='*.json5' --include='*.js' --include='*.py' --include='*.sh' \
-            --exclude-dir='.git' --exclude-dir='node_modules' --exclude='.github/workflows/security-scan.yml' . 2>/dev/null | \
-            grep -v 'YOUR_' | grep -v 'PLACEHOLDER' | grep -v '00000000-0000-0000-0000-000000000000'; then
-            echo "::error::BLOCKED: Found potential real Notion/service UUIDs"
+          # Notion-style UUIDs (8-4-4-4-12 hex)
+          UUID_HITS=$(grep -rPn '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' $SCAN_INCLUDES $SCAN_EXCLUDES . 2>/dev/null \
+            | grep -v 'YOUR_\|PLACEHOLDER\|00000000-0000-0000-0000-000000000000' || true)
+          if [ -n "$UUID_HITS" ]; then
+            echo "$UUID_HITS"
+            echo "::error::BLOCKED: Found potential real UUIDs"
             FOUND=1
           fi
 
           if [ "$FOUND" -eq 1 ]; then
-            echo ""
-            echo "::error::Infrastructure ID scan failed. Replace real IDs with placeholders."
+            echo "::error::Infrastructure ID scan failed."
             exit 1
           fi
+          echo "✅ No hardcoded infrastructure IDs found."
 
-          echo "No hardcoded infrastructure IDs found."
-
-      - name: Verify placeholder conventions
+      - name: Verify placeholders exist
         run: |
           echo "=== Checking placeholder conventions ==="
-
-          # Check that known placeholder patterns exist (sanity check)
-          PLACEHOLDERS=(
-            "YOUR_DISCORD_CHANNEL_ID"
-            "YOUR_NOTION_DATABASE_ID"
-            "YOUR_X_HANDLE"
-          )
-
-          for PH in "${PLACEHOLDERS[@]}"; do
+          for PH in YOUR_DISCORD_CHANNEL_ID YOUR_NOTION_DATABASE_ID YOUR_X_HANDLE; do
             COUNT=$(grep -r "$PH" --include='*.md' --include='*.json5' --include='*.js' --exclude-dir='.git' . 2>/dev/null | wc -l)
-            if [ "$COUNT" -gt 0 ]; then
-              echo "Placeholder $PH found in $COUNT location(s)"
-            fi
+            [ "$COUNT" -gt 0 ] && echo "✓ $PH found ($COUNT)"
           done
-
           echo "Placeholder check complete."

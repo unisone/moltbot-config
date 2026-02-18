@@ -3,10 +3,10 @@
 # Usage: post-flight.sh "task description" "outcome" ["error details"]
 
 set -e
-CLAWD_DIR="${CLAWD_DIR:-/Users/danbot/clawd}"
+WORKSPACE="${OPENCLAW_WORKSPACE:-$HOME/.openclaw/workspace}"
 TODAY=$(date +%Y-%m-%d)
 TIMESTAMP=$(date +%H:%M)
-MEMORY_FILE="$CLAWD_DIR/memory/$TODAY.md"
+MEMORY_FILE="$WORKSPACE/memory/$TODAY.md"
 
 TASK="${1:-unspecified task}"
 OUTCOME="${2:-completed}"
@@ -27,7 +27,7 @@ if [ -n "$ERROR_DETAILS" ]; then
     echo "- **Error:** $ERROR_DETAILS" >> "$MEMORY_FILE"
     
     # Also append to ERRORS.md
-    ERRORS_FILE="$CLAWD_DIR/.learnings/ERRORS.md"
+    ERRORS_FILE="$WORKSPACE/.learnings/ERRORS.md"
     echo "" >> "$ERRORS_FILE"
     echo "### $TODAY - $TASK" >> "$ERRORS_FILE"
     echo "**What happened:** $ERROR_DETAILS" >> "$ERRORS_FILE"

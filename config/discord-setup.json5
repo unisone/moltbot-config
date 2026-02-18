@@ -5,7 +5,8 @@
   channels: {
     discord: {
       enabled: true,
-      token: "YOUR_DISCORD_BOT_TOKEN",
+      // Token: store via keychain/env, not here. See config/slack-setup.json5 for the pattern.
+      // security add-generic-password -s "discord-bot-token" -a "discord" -w "your-token-here"
       groupPolicy: "allowlist",
       dm: {
         policy: "open",
