@@ -69,6 +69,7 @@ jobs:
           # Exclude: placeholders, generic docs patterns, code comments about email
           EMAIL_HITS=$(grep -rPn '\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b' $SCAN_INCLUDES $SCAN_EXCLUDES . 2>/dev/null \
             | grep -v 'example\.com\|placeholder\.com\|yourdomain\.com\|you@gmail\.com\|your-email@' \
+            | grep -v 'noreply@\|user@email\.com\|a@b\.com\|test@test\|foo@bar' \
             | grep -v '"email":\|"calendar":\|# .*@\|//.*@' || true)
           if [ -n "$EMAIL_HITS" ]; then
             echo "$EMAIL_HITS"
